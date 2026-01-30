@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeVault - Gerenciador de Código</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #1a1d29;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: #252836;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .logo-icon {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #00d9ff 0%, #00a8cc 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .logo-text {
+            background: linear-gradient(135deg, #00d9ff 0%, #00ffc8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: #a0a0a0;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+            padding: 0.5rem 0;
+            cursor: pointer;
+        }
+
+        nav a:hover,
+        nav a.active {
+            color: #00d9ff;
+        }
+
+        nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #00d9ff, #00ffc8);
+        }
+
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            background: #2d3142;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00d9ff;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background: #363b4e;
+            transform: rotate(15deg);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2.5rem 2rem;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #252836 0%, #2d3142 100%);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(0, 217, 255, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, #00d9ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #a0a0a0;
+            margin-bottom: 2rem;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 217, 255, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d9ff 0%, #00ffc8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+
+        /* Section */
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #00d9ff 0%, #00a8cc 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Actions Grid */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .action-card {
+            background: #252836;
+            border-radius: 16px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #00d9ff, #00ffc8);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .action-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(0, 217, 255, 0.3);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .action-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.2) 0%, rgba(0, 217, 255, 0.05) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .action-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+            color: #fff;
+        }
+
+        .action-card p {
+            color: #a0a0a0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Recent Activity */
+        .recent-section {
+            background: #252836;
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .activity-item {
+            background: #2d3142;
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .activity-item:hover {
+            background: #343849;
+            border-left-color: #00d9ff;
+            transform: translateX(5px);
+        }
+
+        .activity-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.2) 0%, rgba(0, 217, 255, 0.05) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.3rem;
+        }
+
+        .activity-meta {
+            color: #a0a0a0;
+            font-size: 0.85rem;
+        }
+
+        .activity-lang {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(0, 217, 255, 0.2);
+            color: #00d9ff;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Manager Screen */
+        .manager-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .card {
+            background: #252836;
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            background: #2d3142;
+            border: 2px solid #363b4e;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 250px;
+            font-family: 'Courier New', monospace;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #00d9ff;
+            box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.1);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d9ff 0%, #00a8cc 100%);
+            color: #fff;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 217, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: #2d3142;
+            color: #e0e0e0;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        .btn-secondary:hover {
+            background: #363b4e;
+        }
+
+        .btn-danger {
+            background: #ff4757;
+            color: white;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        .btn-danger:hover {
+            background: #ff3838;
+        }
+
+        /* Code List */
+        .search-box {
+            margin-bottom: 1.5rem;
+        }
+
+        .search-box input {
+            padding-left: 45px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2300d9ff' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 15px center;
+        }
+
+        .code-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .code-item {
+            background: #2d3142;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #00d9ff;
+            transition: all 0.3s;
+        }
+
+        .code-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .code-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .code-item-title {
+            font-weight: 700;
+            color: #fff;
+            font-size: 1.1rem;
+        }
+
+        .code-item-language {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(0, 217, 255, 0.2);
+            color: #00d9ff;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .code-item-description {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .code-item-date {
+            color: #666;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .code-preview {
+            background: #1a1d29;
+            color: #f8f8f2;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            max-height: 100px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .code-preview::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: linear-gradient(transparent, #1a1d29);
+        }
+
+        .code-item-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Categories */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .category-card {
+            background: #252836;
+            border-radius: 16px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            text-align: center;
+        }
+
+        .category-card:hover {
+            border-color: #00d9ff;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.2);
+        }
+
+        .category-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-count {
+            color: #00d9ff;
+            font-size: 0.9rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #252836;
+            border-radius: 16px;
+            padding: 2.5rem;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 100%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: #00d9ff;
+        }
+
+        .modal-code {
+            background: #1a1d29;
+            color: #f8f8f2;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        .modal-code pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 968px) {
+            .manager-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            nav {
+                gap: 1rem;
+                font-size: 0.9rem;
+            }
+
+            .actions-grid,
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo" onclick="navigateTo('home')">
+            <div class="logo-icon">💾</div>
+            <span class="logo-text">CodeVault</span>
+        </div>
+        <nav>
+            <a onclick="navigateTo('home')" data-page="home" class="active">Início</a>
+            <a onclick="navigateTo('manager')" data-page="manager">Meus Códigos</a>
+            <a onclick="navigateTo('categories')" data-page="categories">Categorias</a>
+        </nav>
+        <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+    </header>
+
+    <div class="container">
+        <!-- HOME SCREEN -->
+        <div class="screen active" id="home-screen">
+            <div class="hero">
+                <div class="hero-content">
+                    <h1>Bem-vindo ao CodeVault</h1>
+                    <p>Organize, salve e gerencie seus snippets de código de forma inteligente</p>
+                    <button class="btn btn-primary" onclick="navigateTo('manager')">
+                        <span>➕</span>
+                        Adicionar Novo Código
+                    </button>
+
+                    <div class="hero-stats">
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalCodes">0</div>
+                            <div class="stat-label">Códigos Salvos</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalLanguages">0</div>
+                            <div class="stat-label">Linguagens</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="thisMonth">0</div>
+                            <div class="stat-label">Adicionados Este Mês</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 2.5rem;">
+                <h2 class="section-title">
+                    <span class="section-icon">⚡</span>
+                    Ações Rápidas
+                </h2>
+                <div class="actions-grid">
+                    <div class="action-card" onclick="navigateTo('manager')">
+                        <div class="action-icon">📝</div>
+                        <h3>Novo Snippet</h3>
+                        <p>Adicione um novo código ao seu repositório pessoal</p>
+                    </div>
+                    <div class="action-card" onclick="navigateTo('manager')">
+                        <div class="action-icon">🔍</div>
+                        <h3>Buscar Código</h3>
+                        <p>Encontre rapidamente seus códigos salvos</p>
+                    </div>
+                    <div class="action-card" onclick="navigateTo('categories')">
+                        <div class="action-icon">📁</div>
+                        <h3>Por Categoria</h3>
+                        <p>Navegue pelos códigos por linguagem</p>
+                    </div>
+                    <div class="action-card" onclick="filterFavorites()">
+                        <div class="action-icon">⭐</div>
+                        <h3>Favoritos</h3>
+                        <p>Acesse seus códigos favoritos</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recent-section">
+                <h2 class="section-title">
+                    <span class="section-icon">🕐</span>
+                    Atividade Recente
+                </h2>
+                <div class="activity-list" id="recentActivity"></div>
+            </div>
+        </div>
+
+        <!-- MANAGER SCREEN -->
+        <div class="screen" id="manager-screen">
+            <h1 style="font-size: 2rem; margin-bottom: 2rem; color: #fff;">
+                <span style="margin-right: 10px;">💾</span>
+                Gerenciar Códigos
+            </h1>
+            
+            <div class="manager-grid">
+                <div class="card">
+                    <h2 class="section-title">
+                        <span class="section-icon">➕</span>
+                        Adicionar Código
+                    </h2>
+                    <div id="codeForm">
+                        <div class="form-group">
+                            <label for="codeTitle">Título *</label>
+                            <input type="text" id="codeTitle" placeholder="Ex: Função de validação de email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="codeLanguage">Linguagem *</label>
+                            <select id="codeLanguage" required>
+                                <option value="">Selecione uma linguagem</option>
+                                <option value="JavaScript">JavaScript</option>
+                                <option value="Python">Python</option>
+                                <option value="Java">Java</option>
+                                <option value="C++">C++</option>
+                                <option value="C#">C#</option>
+                                <option value="PHP">PHP</option>
+                                <option value="Ruby">Ruby</option>
+                                <option value="Go">Go</option>
+                                <option value="Rust">Rust</option>
+                                <option value="HTML">HTML</option>
+                                <option value="CSS">CSS</option>
+                                <option value="SQL">SQL</option>
+                                <option value="TypeScript">TypeScript</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="codeDescription">Descrição</label>
+                            <input type="text" id="codeDescription" placeholder="Breve descrição do código">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="codeContent">Código *</label>
+                            <textarea id="codeContent" placeholder="Cole seu código aqui..." required></textarea>
+                        </div>
+
+                        <button onclick="handleSubmit()" class="btn btn-primary">💾 Salvar Código</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="section-title">
+                        <span class="section-icon">📚</span>
+                        Códigos Salvos
+                    </h2>
+                    
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Buscar códigos..." oninput="handleSearch()">
+                    </div>
+
+                    <div class="code-list" id="codeList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CATEGORIES SCREEN -->
+        <div class="screen" id="categories-screen">
+            <h1 style="font-size: 2rem; margin-bottom: 2rem; color: #fff;">
+                <span style="margin-right: 10px;">📁</span>
+                Categorias por Linguagem
+            </h1>
+            
+            <div class="categories-grid" id="categoriesGrid"></div>
+
+            <div class="recent-section" style="margin-top: 2.5rem;">
+                <h2 class="section-title">
+                    <span class="section-icon">📋</span>
+                    Códigos da Categoria
+                </h2>
+                <div id="categoryCodesList" class="code-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="codeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2 id="modalTitle" style="color: #00d9ff; margin-bottom: 10px;"></h2>
+                    <span id="modalLanguage" class="activity-lang"></span>
+                </div>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <p id="modalDescription" style="color: #a0a0a0; margin-bottom: 15px;"></p>
+            <p id="modalDate" style="color: #666; font-size: 0.85rem; margin-bottom: 15px;"></p>
+            <div class="modal-code">
+                <pre><code id="modalCode"></code></pre>
+            </div>
+            <button class="btn btn-primary" onclick="copyModalCode()">📋 Copiar Código</button>
+        </div>
+    </div>
+
+    <script>
+        let codes = [];
+        let currentCategory = null;
+
+        // Navigation
+        function navigateTo(page) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+            
+            document.getElementById(`${page}-screen`).classList.add('active');
+            document.querySelector(`[data-page="${page}"]`)?.classList.add('active');
+
+            if (page === 'home') {
+                updateStats();
+                updateRecentActivity();
+            } else if (page === 'manager') {
+                renderCodes();
+            } else if (page === 'categories') {
+                renderCategories();
+            }
+        }
+
+        // Storage - usando variável em memória ao invés de localStorage
+        function loadCodes() {
+            // Códigos de exemplo iniciais
+            if (codes.length === 0) {
+                codes = [
+                    {
+                        id: Date.now() + 1,
+                        title: 'Validação de Email',
+                        language: 'JavaScript',
+                        description: 'Função para validar endereços de email',
+                        code: 'function validateEmail(email) {\n  const regex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\n  return regex.test(email);\n}',
+                        date: new Date().toISOString(),
+                        favorite: false
+                    }
+                ];
+            }
+            updateStats();
+            updateRecentActivity();
+        }
+
+        // Stats
+        function updateStats() {
+            document.getElementById('totalCodes').textContent = codes.length;
+            
+            const langs = new Set(codes.map(c => c.language));
+            document.getElementById('totalLanguages').textContent = langs.size;
+            
+            const month = new Date().getMonth();
+            const thisMonth = codes.filter(c => new Date(c.date).getMonth() === month);
+            document.getElementById('thisMonth').textContent = thisMonth.length;
+        }
+
+        // Recent Activity
+        function updateRecentActivity() {
+            const list = document.getElementById('recentActivity');
+            
+            if (codes.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 18L22 12L16 6M8 6L2 12L8 18"></path>
+                        </svg>
+                        <p style="margin-top: 1rem; font-size: 1.1rem;">Nenhum código salvo ainda</p>
+                        <p style="margin-top: 0.5rem;">Adicione seu primeiro snippet para começar!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const recent = [...codes].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+            
+            list.innerHTML = recent.map(code => `
+                <div class="activity-item" onclick="viewCode(${code.id})">
+                    <div class="activity-icon">💻</div>
+                    <div class="activity-content">
+                        <div class="activity-title">${code.title}</div>
+                        <div class="activity-meta">
+                            <span class="activity-lang">${code.language}</span>
+                            <span style="margin-left: 10px;">${formatDate(code.date)}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Form Submit
+        function handleSubmit() {
+            const title = document.getElementById('codeTitle').value.trim();
+            const language = document.getElementById('codeLanguage').value;
+            const description = document.getElementById('codeDescription').value.trim();
+            const content = document.getElementById('codeContent').value.trim();
+
+            if (!title || !language || !content) {
+                alert('Por favor, preencha todos os campos obrigatórios!');
+                return;
+            }
+
+            const newCode = {
+                id: Date.now(),
+                title,
+                language,
+                description,
+                code: content,
+                date: new Date().toISOString(),
+                favorite: false
+            };
+
+            codes.push(newCode);
+            
+            // Limpar formulário
+            document.getElementById('codeTitle').value = '';
+            document.getElementById('codeLanguage').value = '';
+            document.getElementById('codeDescription').value = '';
+            document.getElementById('codeContent').value = '';
+
+            renderCodes();
+            updateStats();
+            alert('Código salvo com sucesso!');
+        }
+
+        // Render Codes
+        function renderCodes(filter = '') {
+            const list = document.getElementById('codeList');
+            
+            const filtered = codes.filter(code => 
+                code.title.toLowerCase().includes(filter.toLowerCase()) ||
+                code.language.toLowerCase().includes(filter.toLowerCase()) ||
+                code.description.toLowerCase().includes(filter.toLowerCase())
+            );
+
+            if (filtered.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <p>Nenhum código encontrado</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = filtered.map(code => `
+                <div class="code-item">
+                    <div class="code-item-header">
+                        <div class="code-item-title">${code.title}</div>
+                        <span class="code-item-language">${code.language}</span>
+                    </div>
+                    ${code.description ? `<div class="code-item-description">${code.description}</div>` : ''}
+                    <div class="code-item-date">Criado em ${formatDate(code.date)}</div>
+                    <div class="code-preview">${escapeHtml(code.code.substring(0, 150))}...</div>
+                    <div class="code-item-actions">
+                        <button class="btn btn-secondary" onclick="viewCode(${code.id})">👁️ Ver</button>
+                        <button class="btn btn-secondary" onclick="copyCode(${code.id})">📋 Copiar</button>
+                        <button class="btn btn-danger" onclick="deleteCode(${code.id})">🗑️ Excluir</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Search
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value;
+            renderCodes(query);
+        }
+
+        // Categories
+        function renderCategories() {
+            const grid = document.getElementById('categoriesGrid');
+            const languageCounts = {};
+            
+            codes.forEach(code => {
+                languageCounts[code.language] = (languageCounts[code.language] || 0) + 1;
+            });
+
+            const languageIcons = {
+                'JavaScript': '🟨',
+                'Python': '🐍',
+                'Java': '☕',
+                'C++': '⚙️',
+                'C#': '🔷',
+                'PHP': '🐘',
+                'Ruby': '💎',
+                'Go': '🐹',
+                'Rust': '🦀',
+                'HTML': '🌐',
+                'CSS': '🎨',
+                'SQL': '🗄️',
+                'TypeScript': '📘',
+                'Outro': '📄'
+            };
+
+            if (Object.keys(languageCounts).length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <p>Nenhuma categoria ainda</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = Object.entries(languageCounts).map(([lang, count]) => `
+                <div class="category-card" onclick="filterByCategory('${lang}')">
+                    <div class="category-icon">${languageIcons[lang] || '📄'}</div>
+                    <div class="category-name">${lang}</div>
+                    <div class="category-count">${count} código${count > 1 ? 's' : ''}</div>
+                </div>
+            `).join('');
+
+            if (currentCategory) {
+                filterByCategory(currentCategory);
+            } else {
+                document.getElementById('categoryCodesList').innerHTML = `
+                    <div class="empty-state">
+                        <p>Selecione uma categoria para ver os códigos</p>
+                    </div>
+                `;
+            }
+        }
+
+        function filterByCategory(language) {
+            currentCategory = language;
+            const list = document.getElementById('categoryCodesList');
+            const filtered = codes.filter(code => code.language === language);
+
+            list.innerHTML = filtered.map(code => `
+                <div class="code-item">
+                    <div class="code-item-header">
+                        <div class="code-item-title">${code.title}</div>
+                        <span class="code-item-language">${code.language}</span>
+                    </div>
+                    ${code.description ? `<div class="code-item-description">${code.description}</div>` : ''}
+                    <div class="code-item-date">Criado em ${formatDate(code.date)}</div>
+                    <div class="code-preview">${escapeHtml(code.code.substring(0, 150))}...</div>
+                    <div class="code-item-actions">
+                        <button class="btn btn-secondary" onclick="viewCode(${code.id})">👁️ Ver</button>
+                        <button class="btn btn-secondary" onclick="copyCode(${code.id})">📋 Copiar</button>
+                        <button class="btn btn-danger" onclick="deleteCode(${code.id})">🗑️ Excluir</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Modal
+        function viewCode(id) {
+            const code = codes.find(c => c.id === id);
+            if (!code) return;
+
+            document.getElementById('modalTitle').textContent = code.title;
+            document.getElementById('modalLanguage').textContent = code.language;
+            document.getElementById('modalDescription').textContent = code.description || 'Sem descrição';
+            document.getElementById('modalDate').textContent = `Criado em ${formatDate(code.date)}`;
+            document.getElementById('modalCode').textContent = code.code;
+
+            document.getElementById('codeModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('codeModal').classList.remove('active');
+        }
+
+        function copyModalCode() {
+            const code = document.getElementById('modalCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Código copiado para a área de transferência!');
+            });
+        }
+
+        function copyCode(id) {
+            const code = codes.find(c => c.id === id);
+            if (!code) return;
+
+            navigator.clipboard.writeText(code.code).then(() => {
+                alert('Código copiado para a área de transferência!');
+            });
+        }
+
+        function deleteCode(id) {
+            if (!confirm('Tem certeza que deseja excluir este código?')) return;
+
+            codes = codes.filter(c => c.id !== id);
+            renderCodes();
+            renderCategories();
+            updateStats();
+            updateRecentActivity();
+        }
+
+        function filterFavorites() {
+            navigateTo('manager');
+            setTimeout(() => {
+                const favorites = codes.filter(c => c.favorite);
+                const list = document.getElementById('codeList');
+                
+                if (favorites.length === 0) {
+                    list.innerHTML = `
+                        <div class="empty-state">
+                            <p>Nenhum código favorito ainda</p>
+                        </div>
+                    `;
+                }
+            }, 100);
+        }
+
+        // Utility Functions
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric' 
+            });
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+        }
+
+        // Click outside modal to close
+        document.getElementById('codeModal').addEventListener('click', (e) => {
+            if (e.target.id === 'codeModal') {
+                closeModal();
+            }
+        });
+
+        // Initialize
+        loadCodes();
+        renderCodes();
+        updateStats();
+        updateRecentActivity();
+    </script>
+</body>
+</html>
