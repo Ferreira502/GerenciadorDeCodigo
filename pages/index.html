@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <title>CodeVault - Gerenciador de Código</title>
+</head>
+
+<body>
+    <header>
+        <div class="logo" onclick="navigateTo('home')">
+            <div class="logo-icon">💾</div>
+            <span class="logo-text">CodeVault</span>
+        </div>
+        <nav>
+            <a onclick="navigateTo('home')" data-page="home" class="active">Início</a>
+            <a onclick="navigateTo('manager')" data-page="manager">Meus Códigos</a>
+            <a onclick="navigateTo('categories')" data-page="categories">Categorias</a>
+        </nav>
+        <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+    </header>
+
+    <div class="container">
+        <!-- HOME SCREEN -->
+        <div class="screen active" id="home-screen">
+            <div class="hero">
+                <div class="hero-content">
+                    <h1>Bem-vindo ao CodeVault</h1>
+                    <p>Organize, salve e gerencie seus snippets de código de forma inteligente</p>
+                    <button class="btn btn-primary" onclick="navigateTo('manager')">
+                        <span>➕</span>
+                        Adicionar Novo Código
+                    </button>
+
+                    <div class="hero-stats">
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalCodes">0</div>
+                            <div class="stat-label">Códigos Salvos</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalLanguages">0</div>
+                            <div class="stat-label">Linguagens</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="thisMonth">0</div>
+                            <div class="stat-label">Adicionados Este Mês</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 2.5rem;">
+                <h2 class="section-title">
+                    <span class="section-icon">⚡</span>
+                    Ações Rápidas
+                </h2>
+                <div class="actions-grid">
+                    <div class="action-card" onclick="navigateTo('manager')">
+                        <div class="action-icon">📝</div>
+                        <h3>Novo Snippet</h3>
+                        <p>Adicione um novo código ao seu repositório pessoal</p>
+                    </div>
+                    <div class="action-card" onclick="navigateTo('manager')">
+                        <div class="action-icon">🔍</div>
+                        <h3>Buscar Código</h3>
+                        <p>Encontre rapidamente seus códigos salvos</p>
+                    </div>
+                    <div class="action-card" onclick="navigateTo('categories')">
+                        <div class="action-icon">📁</div>
+                        <h3>Por Categoria</h3>
+                        <p>Navegue pelos códigos por linguagem</p>
+                    </div>
+                    <div class="action-card" onclick="filterFavorites()">
+                        <div class="action-icon">⭐</div>
+                        <h3>Favoritos</h3>
+                        <p>Acesse seus códigos favoritos</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recent-section">
+                <h2 class="section-title">
+                    <span class="section-icon">🕐</span>
+                    Atividade Recente
+                </h2>
+                <div class="activity-list" id="recentActivity"></div>
+            </div>
+        </div>
+
+        <!-- MANAGER SCREEN -->
+        <div class="screen" id="manager-screen">
+            <h1 style="font-size: 2rem; margin-bottom: 2rem; color: #fff;">
+                <span style="margin-right: 10px;">💾</span>
+                Gerenciar Códigos
+            </h1>
+
+            <div class="manager-grid">
+                <div class="card">
+                    <h2 class="section-title">
+                        <span class="section-icon">➕</span>
+                        Adicionar Código
+                    </h2>
+                    <div id="codeForm">
+                        <div class="form-group">
+                            <label for="codeTitle">Título *</label>
+                            <input type="text" id="codeTitle" placeholder="Ex: Função de validação de email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="codeLanguage">Linguagem *</label>
+                            <select id="codeLanguage" required>
+                                <option value="">Selecione uma linguagem</option>
+                                <option value="JavaScript">JavaScript</option>
+                                <option value="Python">Python</option>
+                                <option value="Java">Java</option>
+                                <option value="C++">C++</option>
+                                <option value="C#">C#</option>
+                                <option value="PHP">PHP</option>
+                                <option value="Ruby">Ruby</option>
+                                <option value="Go">Go</option>
+                                <option value="Rust">Rust</option>
+                                <option value="HTML">HTML</option>
+                                <option value="CSS">CSS</option>
+                                <option value="SQL">SQL</option>
+                                <option value="TypeScript">TypeScript</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="codeDescription">Descrição</label>
+                            <input type="text" id="codeDescription" placeholder="Breve descrição do código">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="codeContent">Código *</label>
+                            <textarea id="codeContent" placeholder="Cole seu código aqui..." required></textarea>
+                        </div>
+
+                        <button onclick="handleSubmit()" class="btn btn-primary">💾 Salvar Código</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="section-title">
+                        <span class="section-icon">📚</span>
+                        Códigos Salvos
+                    </h2>
+
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Buscar códigos..." oninput="handleSearch()">
+                    </div>
+
+                    <div class="code-list" id="codeList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CATEGORIES SCREEN -->
+        <div class="screen" id="categories-screen">
+            <h1 style="font-size: 2rem; margin-bottom: 2rem; color: #fff;">
+                <span style="margin-right: 10px;">📁</span>
+                Categorias por Linguagem
+            </h1>
+
+            <div class="categories-grid" id="categoriesGrid"></div>
+
+            <div class="recent-section" style="margin-top: 2.5rem;">
+                <h2 class="section-title">
+                    <span class="section-icon">📋</span>
+                    Códigos da Categoria
+                </h2>
+                <div id="categoryCodesList" class="code-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="codeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2 id="modalTitle" style="color: #00d9ff; margin-bottom: 10px;"></h2>
+                    <span id="modalLanguage" class="activity-lang"></span>
+                </div>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <p id="modalDescription" style="color: #a0a0a0; margin-bottom: 15px;"></p>
+            <p id="modalDate" style="color: #666; font-size: 0.85rem; margin-bottom: 15px;"></p>
+            <div class="modal-code">
+                <pre><code id="modalCode"></code></pre>
+            </div>
+            <button class="btn btn-primary" onclick="copyModalCode()">📋 Copiar Código</button>
+        </div>
+    </div>
+
+    <script src="../assets/js/script.js"></script>
+</body>
+
+</html>
