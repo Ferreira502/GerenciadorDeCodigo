@@ -87,3 +87,19 @@ body {
     margin-bottom: 10px;
     text-align: center;
 }
+
+.link-cadastro {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.link-cadastro a {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.link-cadastro a:hover {
+    text-decoration: underline;
+}
