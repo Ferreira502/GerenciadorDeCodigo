@@ -1,12 +1,11 @@
 // Funcoes específicas da pagina de categorias
-
 let currentCategory = null;
 
 // Categories
 function renderCategories() {
     const grid = document.getElementById('categoriesGrid');
-    const languageCounts = {};
 
+    const languageCounts = {};
     codes.forEach(code => {
         languageCounts[code.language] = (languageCounts[code.language] || 0) + 1;
     });
@@ -43,9 +42,9 @@ function renderCategories() {
     }
 
     grid.innerHTML = Object.entries(languageCounts).map(([lang, count]) => `
-        <div class="category-card" onclick="filterByCategory('${lang}')">
+        <div class="category-card" onclick="filterByCategory('${escapeHtml(lang)}')">
             <div class="category-icon">${languageIcons[lang] || '📄'}</div>
-            <div class="category-name">${lang}</div>
+            <div class="category-name">${escapeHtml(lang)}</div>
             <div class="category-count">${count} código${count > 1 ? 's' : ''}</div>
         </div>
     `).join('');
@@ -69,10 +68,10 @@ function filterByCategory(language) {
     list.innerHTML = filtered.map(code => `
         <div class="code-item">
             <div class="code-item-header">
-                <div class="code-item-title">${code.title}</div>
-                <span class="code-item-language">${code.language}</span>
+                <div class="code-item-title">${escapeHtml(code.title)}</div>
+                <span class="code-item-language">${escapeHtml(code.language)}</span>
             </div>
-            ${code.description ? `<div class="code-item-description">${code.description}</div>` : ''}
+            ${code.description ? `<div class="code-item-description">${escapeHtml(code.description)}</div>` : ''}
             <div class="code-item-date">Criado em ${formatDate(code.date)}</div>
             <div class="code-preview">${escapeHtml(code.code.substring(0, 150))}...</div>
             <div class="code-item-actions">

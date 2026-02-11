@@ -4,48 +4,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/cadastro.css">
+    <title>CodeVault — Entrar</title>
 </head>
 
 <body>
+    <div class="auth-wrapper">
+        <div class="auth-logo">
+            <span class="logo-text">CodeVault</span>
+            <p>Seu repositório pessoal de snippets</p>
+        </div>
 
-    <div class="container">
-        <!-- Tela de Cadastro -->
-        <div id="telaCadastro" class="tela">
-            <h2>Criar Conta</h2>
-            <p class="subtitulo">Preencha seus dados</p>
+        <div class="auth-card">
+            <!-- Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchTab('login')">Entrar</button>
+                <button class="auth-tab" onclick="switchTab('cadastro')">Criar Conta</button>
+            </div>
 
-            <div id="erroCadastro" class="mensagem-erro"></div>
+            <!-- LOGIN -->
+            <div class="auth-form active" id="formLogin">
+                <div class="form-title">Bem-vindo de volta</div>
+                <div class="form-subtitle">Acesse seus códigos salvos</div>
 
-            <form id="formCadastro">
-                <div class="grupo-formulario">
-                    <label for="nomeCadastro">Nome completo</label>
-                    <input type="text" id="nomeCadastro" placeholder="Seu nome" required>
+                <div class="auth-error" id="erroLogin">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span id="erroLoginMsg"></span>
                 </div>
 
-                <div class="grupo-formulario">
-                    <label for="emailCadastro">Email</label>
-                    <input type="email" id="emailCadastro" placeholder="seu@email.com" required>
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <div class="input-wrap">
+                        <input type="email" id="loginEmail" placeholder="seu@email.com" autocomplete="email">
+                        <i class="fa-regular fa-envelope"></i>
+                    </div>
                 </div>
 
-                <div class="grupo-formulario">
-                    <label for="senhaCadastro">Senha</label>
-                    <input type="password" id="senhaCadastro" placeholder="Mínimo 6 caracteres" required>
+                <div class="form-group">
+                    <label for="loginSenha">Senha</label>
+                    <div class="input-wrap">
+                        <input type="password" id="loginSenha" placeholder="Digite sua senha"
+                            autocomplete="current-password">
+                        <i class="fa-solid fa-lock"></i>
+                        <button type="button" class="toggle-pass" onclick="toggleSenha('loginSenha', this)">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <button type="submit" class="botao-principal">Cadastrar</button>
+                <button class="btn-auth" id="btnLogin" onclick="fazerLogin()">
+                    <span class="spinner" id="spinnerLogin"></span>
+                    <i class="fa-solid fa-right-to-bracket" id="iconLogin"></i>
+                    Entrar
+                </button>
+            </div>
 
-                <div class="link-login">
-                    <p>Já tem uma conta?
-                        <a href="login.html">Entrar</a>
-                    </p>
+            <!-- CADASTRO -->
+            <div class="auth-form" id="formCadastro">
+                <div class="form-title">Crie sua conta</div>
+                <div class="form-subtitle">Gratuito e sem complicação</div>
+
+                <div class="auth-error" id="erroCadastro">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span id="erroCadastroMsg"></span>
+                </div>
+                <div class="auth-success" id="sucessoCadastro">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>Conta criada! Redirecionando...</span>
                 </div>
 
-            </form>
+                <div class="form-group">
+                    <label for="cadNome">Nome completo</label>
+                    <div class="input-wrap">
+                        <input type="text" id="cadNome" placeholder="Seu nome" autocomplete="name">
+                        <i class="fa-regular fa-user"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cadEmail">Email</label>
+                    <div class="input-wrap">
+                        <input type="email" id="cadEmail" placeholder="seu@email.com" autocomplete="email">
+                        <i class="fa-regular fa-envelope"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cadSenha">Senha</label>
+                    <div class="input-wrap">
+                        <input type="password" id="cadSenha" placeholder="Mínimo 6 caracteres"
+                            autocomplete="new-password" oninput="avaliarSenha(this.value)">
+                        <i class="fa-solid fa-lock"></i>
+                        <button type="button" class="toggle-pass" onclick="toggleSenha('cadSenha', this)">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="password-strength">
+                        <div class="strength-bar" id="strengthBar"></div>
+                    </div>
+                    <div class="strength-label" id="strengthLabel"></div>
+                </div>
+
+                <button class="btn-auth" id="btnCadastro" onclick="fazerCadastro()">
+                    <span class="spinner" id="spinnerCadastro"></span>
+                    <i class="fa-solid fa-user-plus" id="iconCadastro"></i>
+                    Criar Conta
+                </button>
+            </div>
         </div>
     </div>
 
+    <script src="../assets/js/cadastro.js"></script>
 </body>
 
 </html>
