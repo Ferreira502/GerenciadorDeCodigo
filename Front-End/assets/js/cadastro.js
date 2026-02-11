@@ -1,12 +1,12 @@
-// =====================
+
 // CHAVES DE STORAGE
-// =====================
+
 const AUTH_USERS_KEY = 'cv_users';
 const AUTH_SESSION_KEY = 'cv_session';
 
-// =====================
-// UTILITÁRIOS
-// =====================
+
+// UTILITARIOS
+
 function getUsers() {
     return JSON.parse(localStorage.getItem(AUTH_USERS_KEY) || '{}');
 }
@@ -24,14 +24,14 @@ function getSession() {
     return JSON.parse(localStorage.getItem(AUTH_SESSION_KEY) || 'null');
 }
 
-// Redireciona se já logado
+// Redireciona se ja logado
 if (getSession()) {
     window.location.href = 'index.html';
 }
 
-// =====================
+
 // TABS
-// =====================
+
 function switchTab(tab) {
     document.querySelectorAll('.auth-tab').forEach((t, i) => {
         t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'cadastro'));
@@ -43,9 +43,9 @@ function switchTab(tab) {
     esconderErro('erroCadastro');
 }
 
-// =====================
+
 // ERROS / SUCESSO
-// =====================
+
 function mostrarErro(id, msg) {
     const el = document.getElementById(id);
     document.getElementById(id + 'Msg').textContent = msg;
@@ -55,9 +55,9 @@ function esconderErro(id) {
     document.getElementById(id).classList.remove('show');
 }
 
-// =====================
+
 // TOGGLE SENHA
-// =====================
+
 function toggleSenha(inputId, btn) {
     const input = document.getElementById(inputId);
     const icon = btn.querySelector('i');
@@ -70,9 +70,9 @@ function toggleSenha(inputId, btn) {
     }
 }
 
-// =====================
-// FORÇA DA SENHA
-// =====================
+
+// FORCA DA SENHA
+
 function avaliarSenha(senha) {
     const bar = document.getElementById('strengthBar');
     const label = document.getElementById('strengthLabel');
@@ -98,18 +98,18 @@ function avaliarSenha(senha) {
     label.style.color = lvl.color;
 }
 
-// =====================
+
 // LOADING STATE
-// =====================
+
 function setLoading(btnId, spinnerId, iconId, loading) {
     document.getElementById(btnId).disabled = loading;
     document.getElementById(spinnerId).style.display = loading ? 'block' : 'none';
     document.getElementById(iconId).style.display = loading ? 'none' : 'inline';
 }
 
-// =====================
+
 // LOGIN
-// =====================
+
 function fazerLogin() {
     const email = document.getElementById('loginEmail').value.trim().toLowerCase();
     const senha = document.getElementById('loginSenha').value;
@@ -137,9 +137,9 @@ function fazerLogin() {
     }, 600);
 }
 
-// =====================
+
 // CADASTRO
-// =====================
+
 function fazerCadastro() {
     const nome = document.getElementById('cadNome').value.trim();
     const email = document.getElementById('cadEmail').value.trim().toLowerCase();
@@ -151,7 +151,7 @@ function fazerCadastro() {
         return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        mostrarErro('erroCadastro', 'Email inválido.');
+        mostrarErro('erroCadastro', 'Email invalido.');
         return;
     }
     if (senha.length < 6) {
@@ -165,7 +165,7 @@ function fazerCadastro() {
         const users = getUsers();
 
         if (users[email]) {
-            mostrarErro('erroCadastro', 'Este email já está cadastrado.');
+            mostrarErro('erroCadastro', 'Este email ja esta cadastrado.');
             setLoading('btnCadastro', 'spinnerCadastro', 'iconCadastro', false);
             return;
         }
@@ -174,7 +174,7 @@ function fazerCadastro() {
             id: 'user_' + Date.now(),
             nome,
             email,
-            senha: btoa(senha), // codificação básica
+            senha: btoa(senha), // codificacão basica
             criadoEm: new Date().toISOString()
         };
 
