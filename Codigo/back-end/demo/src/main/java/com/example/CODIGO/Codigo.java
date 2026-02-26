@@ -5,7 +5,7 @@ public class Codigo
 {
     private int id;
     private String nome;
-    private String usuario;
+    private String email;
     private String linguagem;
 }
 
@@ -13,11 +13,11 @@ public class Codigo
 public Codigo() {}
 
 // Contrutor com a inicializacao dos atributos
-public Codigo( int id, String nome, String usuario, String linguagem)
+public Codigo( int id, String nome, String email, String linguagem)
 {
     this.id = id;
     this.nome = nome;
-    this.usuario= usuario;
+    this.email= email;
     this.linguagem = linguagem;
 }
 
@@ -47,16 +47,16 @@ public void setNome(String nome)
     this.nome = nome;
 }
 
-// Metodos getters and setters para usuario
+// Metodos getters and setters para email
 
-public String getusuario()
+public String getEmail()
 {
-    return this.usuario;
+    return this.email;
 }
 
-public void setusuario(String usuario)
+public void setEmail(String email)
 {
-    this.usuario = usuario;
+    this.email = email;
 }
 
 // Metodos getters and setters para linguagem
@@ -75,7 +75,7 @@ public void setlinguagem()
     public String toString() {
         return "Codigo {" +
                "nome='" + nome + '\'' +
-               ", usuario='" + usuario + '\'' +
+               ", email='" + email + '\'' +
                ", id='" + id + '\'' +
                '}';
     }
