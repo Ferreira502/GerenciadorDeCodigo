@@ -1,36 +1,13 @@
+// cadastro.js — login e cadastro via API
 
-// CHAVES DE STORAGE
+// Se já está logado, redireciona
+(async () => {
+    const me = await fetch('http://localhost:8080/api/auth/me', { credentials: 'include' })
+        .then(r => r.ok ? r.json() : null).catch(() => null);
+    if (me) window.location.href = 'index.html';
+})();
 
-const AUTH_USERS_KEY = 'cv_users';
-const AUTH_SESSION_KEY = 'cv_session';
-
-
-// UTILITARIOS
-
-function getUsers() {
-    return JSON.parse(localStorage.getItem(AUTH_USERS_KEY) || '{}');
-}
-function saveUsers(users) {
-    localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(users));
-}
-function setSession(user) {
-    localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify({
-        id: user.id,
-        nome: user.nome,
-        email: user.email
-    }));
-}
-function getSession() {
-    return JSON.parse(localStorage.getItem(AUTH_SESSION_KEY) || 'null');
-}
-
-// Redireciona se ja logado
-if (getSession()) {
-    window.location.href = 'index.html';
-}
-
-
-// TABS
+// ─── Tabs ─────────────────────────────────────────────────────────────
 
 function switchTab(tab) {
     document.querySelectorAll('.auth-tab').forEach((t, i) => {
@@ -38,13 +15,11 @@ function switchTab(tab) {
     });
     document.getElementById('formLogin').classList.toggle('active', tab === 'login');
     document.getElementById('formCadastro').classList.toggle('active', tab === 'cadastro');
-    // limpa erros
     esconderErro('erroLogin');
     esconderErro('erroCadastro');
 }
 
-
-// ERROS / SUCESSO
+// ─── Erros / Sucesso ──────────────────────────────────────────────────
 
 function mostrarErro(id, msg) {
     const el = document.getElementById(id);
@@ -55,12 +30,11 @@ function esconderErro(id) {
     document.getElementById(id).classList.remove('show');
 }
 
-
-// TOGGLE SENHA
+// ─── Toggle senha ─────────────────────────────────────────────────────
 
 function toggleSenha(inputId, btn) {
     const input = document.getElementById(inputId);
-    const icon = btn.querySelector('i');
+    const icon  = btn.querySelector('i');
     if (input.type === 'password') {
         input.type = 'text';
         icon.className = 'fa-regular fa-eye-slash';
@@ -70,127 +44,107 @@ function toggleSenha(inputId, btn) {
     }
 }
 
-
-// FORCA DA SENHA
+// ─── Força da senha ───────────────────────────────────────────────────
 
 function avaliarSenha(senha) {
-    const bar = document.getElementById('strengthBar');
+    const bar   = document.getElementById('strengthBar');
     const label = document.getElementById('strengthLabel');
-    let score = 0;
-    if (senha.length >= 6) score++;
-    if (senha.length >= 10) score++;
-    if (/[A-Z]/.test(senha)) score++;
-    if (/[0-9]/.test(senha)) score++;
+    let score   = 0;
+    if (senha.length >= 6)          score++;
+    if (senha.length >= 10)         score++;
+    if (/[A-Z]/.test(senha))        score++;
+    if (/[0-9]/.test(senha))        score++;
     if (/[^a-zA-Z0-9]/.test(senha)) score++;
 
     const levels = [
-        { pct: '0%', color: '', text: '' },
-        { pct: '25%', color: '#ff4757', text: 'Muito fraca' },
-        { pct: '50%', color: '#ffa502', text: 'Fraca' },
-        { pct: '75%', color: '#eccc68', text: 'Boa' },
-        { pct: '90%', color: '#2ed573', text: 'Forte' },
+        { pct: '0%',   color: '',       text: '' },
+        { pct: '25%',  color: '#ff4757', text: 'Muito fraca' },
+        { pct: '50%',  color: '#ffa502', text: 'Fraca' },
+        { pct: '75%',  color: '#eccc68', text: 'Boa' },
+        { pct: '90%',  color: '#2ed573', text: 'Forte' },
         { pct: '100%', color: '#00d9ff', text: 'Muito forte' },
     ];
     const lvl = levels[Math.min(score, 5)];
-    bar.style.width = lvl.pct;
+    bar.style.width      = lvl.pct;
     bar.style.background = lvl.color;
-    label.textContent = lvl.text;
-    label.style.color = lvl.color;
+    label.textContent    = lvl.text;
+    label.style.color    = lvl.color;
 }
 
-
-// LOADING STATE
+// ─── Loading state ────────────────────────────────────────────────────
 
 function setLoading(btnId, spinnerId, iconId, loading) {
-    document.getElementById(btnId).disabled = loading;
-    document.getElementById(spinnerId).style.display = loading ? 'block' : 'none';
-    document.getElementById(iconId).style.display = loading ? 'none' : 'inline';
+    document.getElementById(btnId).disabled                     = loading;
+    document.getElementById(spinnerId).style.display            = loading ? 'block' : 'none';
+    document.getElementById(iconId).style.display               = loading ? 'none' : 'inline';
 }
 
+// ─── Login ────────────────────────────────────────────────────────────
 
-// LOGIN
-
-function fazerLogin() {
+async function fazerLogin() {
     const email = document.getElementById('loginEmail').value.trim().toLowerCase();
     const senha = document.getElementById('loginSenha').value;
     esconderErro('erroLogin');
 
-    if (!email || !senha) {
-        mostrarErro('erroLogin', 'Preencha todos os campos.');
-        return;
-    }
+    if (!email || !senha) { mostrarErro('erroLogin', 'Preencha todos os campos.'); return; }
 
     setLoading('btnLogin', 'spinnerLogin', 'iconLogin', true);
 
-    setTimeout(() => {
-        const users = getUsers();
-        const user = users[email];
+    const r = await fetch('http://localhost:8080/api/auth/login', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, senha })
+    }).catch(() => null);
 
-        if (!user || user.senha !== btoa(senha)) {
-            mostrarErro('erroLogin', 'Email ou senha incorretos.');
-            setLoading('btnLogin', 'spinnerLogin', 'iconLogin', false);
-            return;
-        }
+    setLoading('btnLogin', 'spinnerLogin', 'iconLogin', false);
 
-        setSession(user);
-        window.location.href = 'index.html';
-    }, 600);
+    if (!r || !r.ok) {
+        const data = r ? await r.json() : {};
+        mostrarErro('erroLogin', data.erro || 'Erro ao conectar ao servidor.');
+        return;
+    }
+
+    window.location.href = 'index.html';
 }
 
+// ─── Cadastro ─────────────────────────────────────────────────────────
 
-// CADASTRO
-
-function fazerCadastro() {
-    const nome = document.getElementById('cadNome').value.trim();
+async function fazerCadastro() {
+    const nome  = document.getElementById('cadNome').value.trim();
     const email = document.getElementById('cadEmail').value.trim().toLowerCase();
     const senha = document.getElementById('cadSenha').value;
     esconderErro('erroCadastro');
 
-    if (!nome || !email || !senha) {
-        mostrarErro('erroCadastro', 'Preencha todos os campos.');
-        return;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        mostrarErro('erroCadastro', 'Email invalido.');
-        return;
-    }
-    if (senha.length < 6) {
-        mostrarErro('erroCadastro', 'A senha deve ter no mínimo 6 caracteres.');
-        return;
-    }
+    if (!nome || !email || !senha) { mostrarErro('erroCadastro', 'Preencha todos os campos.'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { mostrarErro('erroCadastro', 'Email inválido.'); return; }
+    if (senha.length < 6) { mostrarErro('erroCadastro', 'A senha deve ter no mínimo 6 caracteres.'); return; }
 
     setLoading('btnCadastro', 'spinnerCadastro', 'iconCadastro', true);
 
-    setTimeout(() => {
-        const users = getUsers();
+    const r = await fetch('http://localhost:8080/api/auth/cadastro', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, email, senha })
+    }).catch(() => null);
 
-        if (users[email]) {
-            mostrarErro('erroCadastro', 'Este email ja esta cadastrado.');
-            setLoading('btnCadastro', 'spinnerCadastro', 'iconCadastro', false);
-            return;
-        }
+    setLoading('btnCadastro', 'spinnerCadastro', 'iconCadastro', false);
 
-        const newUser = {
-            id: 'user_' + Date.now(),
-            nome,
-            email,
-            senha: btoa(senha), // codificacão basica
-            criadoEm: new Date().toISOString()
-        };
+    if (!r || !r.ok) {
+        const data = r ? await r.json() : {};
+        mostrarErro('erroCadastro', data.erro || 'Erro ao conectar ao servidor.');
+        return;
+    }
 
-        users[email] = newUser;
-        saveUsers(users);
-        setSession(newUser);
-
-        document.getElementById('sucessoCadastro').classList.add('show');
-        setTimeout(() => { window.location.href = 'index.html'; }, 1200);
-    }, 600);
+    document.getElementById('sucessoCadastro').classList.add('show');
+    setTimeout(() => { window.location.href = 'index.html'; }, 1200);
 }
 
-// Enter para submeter
+// ─── Enter para submeter ──────────────────────────────────────────────
+
 document.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter') return;
     const loginAtivo = document.getElementById('formLogin').classList.contains('active');
-    if (loginAtivo) fazerLogin();
-    else fazerCadastro();
+    if (loginAtivo) fazerLogin(); else fazerCadastro();
 });

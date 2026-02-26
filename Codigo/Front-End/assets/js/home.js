@@ -1,55 +1,54 @@
-// Funcoes especificas da pagina inicial
+// home.js — página inicial
 
-// Stats
-function updateStats() {
-    document.getElementById('totalCodes').textContent = codes.length;
-    const langs = new Set(codes.map(c => c.language));
-    document.getElementById('totalLanguages').textContent = langs.size;
-    const month = new Date().getMonth();
-    const year = new Date().getFullYear();
-    const thisMonth = codes.filter(c => {
-        const d = new Date(c.date);
-        return d.getMonth() === month && d.getFullYear() === year;
+document.addEventListener('DOMContentLoaded', async () => {
+    const session = await injectUserMenu();
+    if (!session) return; // redireciona se não logado
+
+    const codigos = await listarCodigos();
+    atualizarStats(codigos);
+    renderizarAtividade(codigos);
+});
+
+function atualizarStats(codigos) {
+    document.getElementById('totalCodes').textContent     = codigos.length;
+    document.getElementById('totalLanguages').textContent = new Set(codigos.map(c => c.linguagem)).size;
+
+    const agora = new Date();
+    const doMes = codigos.filter(c => {
+        const d = new Date(c.criadoEm);
+        return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
     });
-    document.getElementById('thisMonth').textContent = thisMonth.length;
+    document.getElementById('thisMonth').textContent = doMes.length;
 }
 
-// Atividade Recente
-function updateRecentActivity() {
+function renderizarAtividade(codigos) {
     const list = document.getElementById('recentActivity');
-    if (codes.length === 0) {
+
+    if (codigos.length === 0) {
         list.innerHTML = `
             <div class="empty-state">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M16 18L22 12L16 6M8 6L2 12L8 18"></path>
+                    <path d="M16 18L22 12L16 6M8 6L2 12L8 18"/>
                 </svg>
-                <p style="margin-top: 1rem; font-size: 1.1rem;">Nenhum código salvo ainda</p>
-                <p style="margin-top: 0.5rem;">Adicione seu primeiro código para começar!</p>
-            </div>
-        `;
+                <p style="margin-top:1rem;font-size:1.1rem;">Nenhum código salvo ainda</p>
+                <p style="margin-top:.5rem;">Adicione seu primeiro código para começar!</p>
+            </div>`;
         return;
     }
 
-    const recent = [...codes]
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
+    const recentes = [...codigos]
+        .sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm))
         .slice(0, 5);
 
-    list.innerHTML = recent.map(code => `
-        <div class="activity-item" onclick="viewCode(${code.id})">
+    list.innerHTML = recentes.map(c => `
+        <div class="activity-item" onclick='viewCode(${JSON.stringify(c)})'>
             <div class="activity-icon">💻</div>
             <div class="activity-content">
-                <div class="activity-title">${escapeHtml(code.title)}</div>
+                <div class="activity-title">${escapeHtml(c.titulo)}</div>
                 <div class="activity-meta">
-                    <span class="activity-lang">${escapeHtml(code.language)}</span>
-                    <span style="margin-left: 10px;">${formatDate(code.date)}</span>
+                    <span class="activity-lang">${escapeHtml(c.linguagem)}</span>
+                    <span style="margin-left:10px;">${formatDate(c.criadoEm)}</span>
                 </div>
             </div>
-        </div>
-    `).join('');
+        </div>`).join('');
 }
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-    updateStats();
-    updateRecentActivity();
-});
