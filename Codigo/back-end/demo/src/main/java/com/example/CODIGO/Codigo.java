@@ -1,81 +1,95 @@
 package com.example.CODIGO;
 
-// Classe Codigo para inicializar os valores da tabela no banco
-public class Codigo 
-{
+import java.time.LocalDateTime;
+
+public class Codigo {
     private int id;
-    private String nome;
-    private String email;
+    private String titulo;
     private String linguagem;
-}
+    private String descricao;
+    private String codigo;
+    private LocalDateTime criadoEm;
+    private int usuarioId;
 
-// Contrutor para a classe codigo
-public Codigo() {}
+    // Construtor vazio
+    public Codigo() {}
 
-// Contrutor com a inicializacao dos atributos
-public Codigo( int id, String nome, String email, String linguagem)
-{
-    this.id = id;
-    this.nome = nome;
-    this.email= email;
-    this.linguagem = linguagem;
-}
+    // Construtor completo
+    public Codigo(int id, String titulo, String linguagem, String descricao, 
+                  String codigo, LocalDateTime criadoEm, int usuarioId) {
+        this.id = id;
+        this.titulo = titulo;
+        this.linguagem = linguagem;
+        this.descricao = descricao;
+        this.codigo = codigo;
+        this.criadoEm = criadoEm;
+        this.usuarioId = usuarioId;
+    }
 
-// Metodos getters and setters para os atributos
+    // Getters e Setters
+    public int getId() {
+        return this.id;
+    }
 
-// Metodos getters and setters para id
+    public void setId(int id) {
+        this.id = id;
+    }
 
-public int getID()
-{
-    return this.id;
-}
+    public String getTitulo() {
+        return this.titulo;
+    }
 
-public void setID(int id)
-{
-    this.id = id;
-}
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
 
-// Metodos getters and setters para nome
+    public String getLinguagem() {
+        return this.linguagem;
+    }
 
-public String getNome()
-{
-    return this.nome;
-}
+    public void setLinguagem(String linguagem) {
+        this.linguagem = linguagem;
+    }
 
-public void setNome(String nome)
-{
-    this.nome = nome;
-}
+    public String getDescricao() {
+        return this.descricao;
+    }
 
-// Metodos getters and setters para email
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
 
-public String getEmail()
-{
-    return this.email;
-}
+    public String getCodigo() {
+        return this.codigo;
+    }
 
-public void setEmail(String email)
-{
-    this.email = email;
-}
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
 
-// Metodos getters and setters para linguagem
+    public LocalDateTime getCriadoEm() {
+        return this.criadoEm;
+    }
 
-public String getlinguagem()
-{
-    return this.linguagem;
-}
+    public void setCriadoEm(LocalDateTime criadoEm) {
+        this.criadoEm = criadoEm;
+    }
 
-public void setlinguagem()
-{
-    this.linguagem = linguagem;
-}
+    public int getUsuarioId() {
+        return this.usuarioId;
+    }
 
-@Override
+    public void setUsuarioId(int usuarioId) {
+        this.usuarioId = usuarioId;
+    }
+
+    @Override
     public String toString() {
         return "Codigo {" +
-               "nome='" + nome + '\'' +
-               ", email='" + email + '\'' +
-               ", id='" + id + '\'' +
+               "id=" + id +
+               ", titulo='" + titulo + '\'' +
+               ", linguagem='" + linguagem + '\'' +
+               ", usuarioId=" + usuarioId +
                '}';
     }
+}

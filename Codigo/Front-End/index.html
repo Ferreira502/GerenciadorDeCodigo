@@ -14,7 +14,7 @@
     <header>
         <div class="logo">
             <a href="index.html" style="text-decoration: none; color: inherit;">
-                <span class="logo-text">Armazena Codigo</span>
+                <span class="texto-logo">Armazena Codigo</span>
             </a>
         </div>
         <nav>
@@ -22,94 +22,94 @@
             <a href="manager.html">Meus Códigos</a>
             <a href="categories.html">Categorias</a>
         </nav>
-        <!-- <button class="theme-toggle" onclick="toggleTheme()">🌙</button> -->
+        <!-- <button class="alternar-tema" onclick="toggleTheme()">🌙</button> -->
     </header>
 
     <div class="container">
         <div class="hero">
-            <div class="hero-content">
+            <div class="conteudo-destaque">
                 <h1>Bem-vindo ao Armazena Codigo</h1>
                 <p>Organize, salve e gerencie seus snippets de código de forma inteligente</p>
-                <a href="manager.html" class="btn btn-primary">
+                <a href="manager.html" class="btn botao-primario">
                     <span><i class="fa-solid fa-plus"></i></span>
                     Adicionar Novo Código
                 </a>
 
-                <div class="hero-stats">
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalCodes">0</div>
-                        <div class="stat-label">Códigos Salvos</div>
+                <div class="estatisticas-destaque">
+                    <div class="cartao-estatistica">
+                        <div class="numero-estatistica" id="totalCodes">0</div>
+                        <div class="rotulo-estatistica">Códigos Salvos</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalLanguages">0</div>
-                        <div class="stat-label">Linguagens</div>
+                    <div class="cartao-estatistica">
+                        <div class="numero-estatistica" id="totalLanguages">0</div>
+                        <div class="rotulo-estatistica">Linguagens</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="thisMonth">0</div>
-                        <div class="stat-label">Adicionados Este Mês</div>
+                    <div class="cartao-estatistica">
+                        <div class="numero-estatistica" id="thisMonth">0</div>
+                        <div class="rotulo-estatistica">Adicionados Este Mês</div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div style="margin-bottom: 2.5rem;">
-            <h2 class="section-title">
-                <span class="section-icon"><i class="fa-solid fa-fire"></i></span>
+            <h2 class="titulo-secao">
+                <span class="icone-secao"><i class="fa-solid fa-fire"></i></span>
                 Ações Rápidas
             </h2>
-            <div class="actions-grid">
-                <a href="manager.html" class="action-card">
-                    <div class="action-icon"><i class="fa-solid fa-code"></i></div>
+            <div class="grade-acoes">
+                <a href="manager.html" class="cartao-acao">
+                    <div class="icone-acao"><i class="fa-solid fa-code"></i></div>
                     <h3>Novo Código</h3>
                     <p>Adicione um novo código ao seu repositório pessoal</p>
                 </a>
-                <a href="manager.html" class="action-card">
-                    <div class="action-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+                <a href="manager.html" class="cartao-acao">
+                    <div class="icone-acao"><i class="fa-solid fa-magnifying-glass"></i></div>
                     <h3>Buscar Código</h3>
                     <p>Encontre rapidamente seus códigos salvos</p>
                 </a>
-                <a href="categories.html" class="action-card">
-                    <div class="action-icon"><i class="fa-solid fa-layer-group"></i></div>
+                <a href="categories.html" class="cartao-acao">
+                    <div class="icone-acao"><i class="fa-solid fa-layer-group"></i></div>
                     <h3>Por Categoria</h3>
                     <p>Navegue pelos códigos por linguagem</p>
                 </a>
-                <a href="manager.html#favorites" class="action-card">
-                    <div class="action-icon"><i class="fa-solid fa-star"></i></div>
+                <a href="manager.html#favorites" class="cartao-acao">
+                    <div class="icone-acao"><i class="fa-solid fa-star"></i></div>
                     <h3>Favoritos</h3>
                     <p>Acesse seus códigos favoritos</p>
                 </a>
             </div>
         </div>
 
-        <div class="recent-section">
-            <h2 class="section-title">
-                <span class="section-icon"><i class="fa-solid fa-clock"></i></span>
+        <div class="secao-recentes">
+            <h2 class="titulo-secao">
+                <span class="icone-secao"><i class="fa-solid fa-clock"></i></span>
                 Atividade Recente
             </h2>
-            <div class="activity-list" id="recentActivity"></div>
+            <div class="lista-atividades" id="recentActivity"></div>
         </div>
     </div>
 
     <!-- Modal -->
     <div class="modal" id="codeModal">
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="conteudo-modal">
+            <div class="cabecalho-modal">
                 <div>
                     <h2 id="modalTitle" style="color: #00d9ff; margin-bottom: 10px;"></h2>
-                    <span id="modalLanguage" class="activity-lang"></span>
+                    <span id="modalLanguage" class="linguagem-badge"></span>
                 </div>
-                <button class="modal-close" onclick="closeModal()">×</button>
+                <button class="fechar-modal" onclick="closeModal()">×</button>
             </div>
             <p id="modalDescription" style="color: #a0a0a0; margin-bottom: 15px;"></p>
             <p id="modalDate" style="color: #666; font-size: 0.85rem; margin-bottom: 15px;"></p>
-            <div class="modal-code">
+            <div class="codigo-modal">
                 <pre><code id="modalCode"></code></pre>
             </div>
-            <button class="btn btn-primary" onclick="copyModalCode()"><i class="fa-solid fa-code"></i> Copiar Código</button>
+            <button class="btn botao-primario" onclick="copyModalCode()"><i class="fa-solid fa-code"></i> Copiar Código</button>
         </div>
     </div>
 
-    <script src="assets/js/script.js"></script>
+    <script src="assets/js/api.js"></script>
     <script src="assets/js/home.js"></script>
 </body>
 

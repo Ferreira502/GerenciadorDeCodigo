@@ -1,81 +1,61 @@
 package com.example.USUARIO;
 
-// Classe Usuario para inicializar os valores da tabela no banco
-public class Usuario 
-{
+public class Usuario {
     private int id;
     private String nome;
     private String email;
     private String senha;
-}
 
-// Contrutor para a classe Usuario
-public Usuario() {}
+    // Construtor vazio
+    public Usuario() {}
 
-// Contrutor com a inicializacao dos atributos
-public Usuario( int id, String nome, String email, String senha)
-{
-    this.id = id;
-    this.nome = nome;
-    this.email= email;
-    this.senha = senha;
-}
+    // Construtor com parametros
+    public Usuario(int id, String nome, String email, String senha) {
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+    }
 
-// Metodos getters and setters para os atributos
+    // Getters e Setters
+    public int getId() {
+        return this.id;
+    }
 
-// Metodos getters and setters para id
+    public void setId(int id) {
+        this.id = id;
+    }
 
-public int getID()
-{
-    return this.id;
-}
+    public String getNome() {
+        return this.nome;
+    }
 
-public void setID(int id)
-{
-    this.id = id;
-}
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
-// Metodos getters and setters para nome
+    public String getEmail() {
+        return this.email;
+    }
 
-public String getNome()
-{
-    return this.nome;
-}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-public void setNome(String nome)
-{
-    this.nome = nome;
-}
+    public String getSenha() {
+        return this.senha;
+    }
 
-// Metodos getters and setters para email
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
 
-public String getEmail()
-{
-    return this.email;
-}
-
-public void setEmail(String email)
-{
-    this.email = email;
-}
-
-// Metodos getters and setters para senha
-
-public String getSenha()
-{
-    return this.senha;
-}
-
-public void setSenha()
-{
-    this.senha = senha;
-}
-
-@Override
+    @Override
     public String toString() {
         return "Usuario {" +
-               "nome='" + nome + '\'' +
+               "id=" + id +
+               ", nome='" + nome + '\'' +
                ", email='" + email + '\'' +
-               ", id='" + id + '\'' +
                '}';
     }
+}

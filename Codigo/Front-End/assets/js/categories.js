@@ -1,13 +1,22 @@
-// categories.js — página de categorias
+// categories.js — pagina de categorias via API
 
 let codigos = [];
 let categoriaAtual = null;
-
 const ICONES = {
-    'JavaScript': '🟨', 'Python': '🐍', 'Java': '☕',
-    'C++': '⚙️', 'C#': '🔷', 'PHP': '🐘', 'Ruby': '💎',
-    'Go': '🐹', 'Rust': '🦀', 'HTML': '🌐', 'CSS': '🎨',
-    'SQL': '🗄️', 'TypeScript': '📘', 'Outro': '📄'
+    'JavaScript': '<i class="fa-brands fa-js"></i>',
+    'Python':     '<i class="fa-brands fa-python"></i>',
+    'Java':       '<i class="fa-brands fa-java"></i>',
+    'C++':        '<i class="fa-solid fa-code"></i>',
+    'C#':         '<i class="fa-solid fa-code"></i>',
+    'PHP':        '<i class="fa-brands fa-php"></i>',
+    'Ruby':       '<i class="fa-solid fa-gem"></i>',
+    'Go':         '<i class="fa-solid fa-code"></i>',
+    'Rust':       '<i class="fa-solid fa-code"></i>',
+    'HTML':       '<i class="fa-brands fa-html5"></i>',
+    'CSS':        '<i class="fa-brands fa-css3-alt"></i>',
+    'SQL':        '<i class="fa-solid fa-database"></i>',
+    'TypeScript': '<i class="fa-brands fa-js"></i>',
+    'Outro':      '<i class="fa-solid fa-file-code"></i>'
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -20,26 +29,23 @@ function renderCategorias() {
     const grid = document.getElementById('categoriesGrid');
     const contagem = {};
     codigos.forEach(c => { contagem[c.linguagem] = (contagem[c.linguagem] || 0) + 1; });
-
     if (Object.keys(contagem).length === 0) {
-        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><p>Nenhuma categoria ainda</p></div>`;
+        grid.innerHTML = `<div class="estado-vazio" style="grid-column:1/-1;"><p>Nenhuma categoria ainda</p></div>`;
         document.getElementById('categoryCodesList').innerHTML =
-            `<div class="empty-state"><p>Adicione códigos para ver as categorias</p></div>`;
+            `<div class="estado-vazio"><p>Adicione códigos para ver as categorias</p></div>`;
         return;
     }
-
     grid.innerHTML = Object.entries(contagem).map(([lang, count]) => `
-        <div class="category-card" onclick="filtrarPorCategoria('${escapeHtml(lang)}')">
-            <div class="category-icon">${ICONES[lang] || '📄'}</div>
-            <div class="category-name">${escapeHtml(lang)}</div>
-            <div class="category-count">${count} código${count > 1 ? 's' : ''}</div>
+        <div class="cartao-categoria" onclick="filtrarPorCategoria('${escapeHtml(lang)}')">
+            <div class="icone-categoria">${ICONES[lang] || '<i class="fa-solid fa-file-code"></i>'}</div>
+            <div class="nome-categoria">${escapeHtml(lang)}</div>
+            <div class="contagem-categoria">${count} código${count > 1 ? 's' : ''}</div>
         </div>`).join('');
-
     if (categoriaAtual) {
         filtrarPorCategoria(categoriaAtual);
     } else {
         document.getElementById('categoryCodesList').innerHTML =
-            `<div class="empty-state"><p>Selecione uma categoria para ver os códigos</p></div>`;
+            `<div class="estado-vazio"><p>Selecione uma categoria para ver os códigos</p></div>`;
     }
 }
 
@@ -47,20 +53,19 @@ function filtrarPorCategoria(linguagem) {
     categoriaAtual = linguagem;
     const list = document.getElementById('categoryCodesList');
     const filtrados = codigos.filter(c => c.linguagem === linguagem);
-
     list.innerHTML = filtrados.map(c => `
-        <div class="code-item">
-            <div class="code-item-header">
-                <div class="code-item-title">${escapeHtml(c.titulo)}</div>
-                <span class="code-item-language">${escapeHtml(c.linguagem)}</span>
+        <div class="item-codigo">
+            <div class="cabecalho-codigo">
+                <div class="titulo-codigo">${escapeHtml(c.titulo)}</div>
+                <span class="linguagem-codigo">${escapeHtml(c.linguagem)}</span>
             </div>
-            ${c.descricao ? `<div class="code-item-description">${escapeHtml(c.descricao)}</div>` : ''}
-            <div class="code-item-date">Criado em ${formatDate(c.criadoEm)}</div>
-            <div class="code-preview">${escapeHtml(c.codigo.substring(0, 150))}...</div>
-            <div class="code-item-actions">
-                <button class="btn btn-secondary" onclick='viewCode(${JSON.stringify(c)})'>👁️ Ver</button>
-                <button class="btn btn-secondary" onclick='copyCode(${JSON.stringify(c)})'>📋 Copiar</button>
-                <button class="btn btn-danger"    onclick="deleteCodeCategoria(${c.id})">🗑️ Excluir</button>
+            ${c.descricao ? `<div class="descricao-codigo">${escapeHtml(c.descricao)}</div>` : ''}
+            <div class="data-codigo">Criado em ${formatDate(c.criadoEm)}</div>
+            <div class="previa-codigo">${escapeHtml(c.codigo.substring(0, 150))}...</div>
+            <div class="acoes-codigo">
+                <button class="btn botao-secundario" onclick='viewCode(${JSON.stringify(c)})'><i class="fa-solid fa-eye"></i> Ver</button>
+                <button class="btn botao-secundario" onclick='copyCode(${JSON.stringify(c)})'><i class="fa-solid fa-copy"></i> Copiar</button>
+                <button class="btn botao-perigo"     onclick="deleteCodeCategoria(${c.id})"><i class="fa-solid fa-trash"></i> Excluir</button>
             </div>
         </div>`).join('');
 }

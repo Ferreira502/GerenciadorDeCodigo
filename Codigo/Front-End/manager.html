@@ -14,7 +14,7 @@
     <header>
         <div class="logo">
             <a href="index.html" style="text-decoration: none; color: inherit;">
-                <span class="logo-text">Armazena Codigo</span>
+                <span class="texto-logo">Armazena Codigo</span>
             </a>
         </div>
         <nav>
@@ -22,7 +22,7 @@
             <a href="manager.html" class="active">Meus Códigos</a>
             <a href="categories.html">Categorias</a>
         </nav>
-        <!-- <button class="theme-toggle" onclick="toggleTheme()">🌙</button> -->
+        <!-- <button class="alternar-tema" onclick="toggleTheme()">🌙</button> -->
     </header>
 
     <div class="container">
@@ -31,19 +31,19 @@
             Gerenciar Códigos
         </h1>
 
-        <div class="manager-grid">
+        <div class="grade-gerenciador">
             <div class="card">
-                <h2 class="section-title">
-                    <span class="section-icon">➕</span>
+                <h2 class="titulo-secao">
+                    <span class="icone-secao">➕</span>
                     Adicionar Código
                 </h2>
                 <div id="codeForm">
-                    <div class="form-group">
-                        <label for="codeTitle">Título *</label>
+                    <div class="grupo-campo">
+                        <label for="codeTitle">Título</label>
                         <input type="text" id="codeTitle" placeholder="Ex: Função de validação de email" required>
                     </div>
 
-                    <div class="form-group">
+                    <div class="grupo-campo">
                         <label for="codeLanguage">Linguagem *</label>
                         <select id="codeLanguage" required>
                             <option value="">Selecione uma linguagem</option>
@@ -64,55 +64,55 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
+                    <div class="grupo-campo">
                         <label for="codeDescription">Descrição</label>
                         <input type="text" id="codeDescription" placeholder="Breve descrição do código">
                     </div>
 
-                    <div class="form-group">
-                        <label for="codeContent">Código *</label>
+                    <div class="grupo-campo">
+                        <label for="codeContent">Código</label>
                         <textarea id="codeContent" placeholder="Cole seu código aqui..." required></textarea>
                     </div>
 
-                    <button onclick="handleSubmit()" class="btn btn-primary"><i class="fa-solid fa-book"></i> Salvar Código</button>
+                    <button onclick="handleSubmit()" class="btn botao-primario"><i class="fa-solid fa-book"></i> Salvar Código</button>
                 </div>
             </div>
 
             <div class="card">
-                <h2 class="section-title">
-                    <span class="section-icon"><i class="fa-solid fa-book"></i></span>
+                <h2 class="titulo-secao">
+                    <span class="icone-secao"><i class="fa-solid fa-book"></i></span>
                     Códigos Salvos
                 </h2>
 
-                <div class="search-box">
+                <div class="caixa-busca">
                     <input type="text" id="searchInput" placeholder="Buscar códigos..." oninput="handleSearch()">
                 </div>
 
-                <div class="code-list" id="codeList"></div>
+                <div class="lista-codigos" id="codeList"></div>
             </div>
         </div>
     </div>
 
     <!-- Modal -->
     <div class="modal" id="codeModal">
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="conteudo-modal">
+            <div class="cabecalho-modal">
                 <div>
                     <h2 id="modalTitle" style="color: #00d9ff; margin-bottom: 10px;"></h2>
-                    <span id="modalLanguage" class="activity-lang"></span>
+                    <span id="modalLanguage" class="linguagem-badge"></span>
                 </div>
-                <button class="modal-close" onclick="closeModal()">×</button>
+                <button class="fechar-modal" onclick="closeModal()">×</button>
             </div>
             <p id="modalDescription" style="color: #a0a0a0; margin-bottom: 15px;"></p>
             <p id="modalDate" style="color: #666; font-size: 0.85rem; margin-bottom: 15px;"></p>
-            <div class="modal-code">
+            <div class="codigo-modal">
                 <pre><code id="modalCode"></code></pre>
             </div>
-            <button class="btn btn-primary" onclick="copyModalCode()"><i class="fa-solid fa-code"></i> Copiar Código</button>
+            <button class="btn botao-primario" onclick="copyModalCode()"><i class="fa-solid fa-code"></i> Copiar Código</button>
         </div>
     </div>
 
-    <script src="assets/js/script.js"></script>
+    <script src="assets/js/api.js"></script>
     <script src="assets/js/manager.js"></script>
 </body>
 

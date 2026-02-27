@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,12 +8,11 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <title>Categorias</title>
 </head>
-
 <body>
     <header>
         <div class="logo">
             <a href="index.html" style="text-decoration: none; color: inherit;">
-                <span class="logo-text">Armazena Codigo</span>
+                <span class="texto-logo">Armazena Codigo</span>
             </a>
         </div>
         <nav>
@@ -22,47 +20,41 @@
             <a href="manager.html">Meus Códigos</a>
             <a href="categories.html" class="active">Categorias</a>
         </nav>
-        <!-- <button class="theme-toggle" onclick="toggleTheme()">🌙</button> -->
+        <!-- <button class="alternar-tema" onclick="toggleTheme()">🌙</button> -->
     </header>
-
     <div class="container">
         <h1 style="font-size: 2rem; margin-bottom: 2rem; color: #fff;">
             <span style="margin-right: 10px;"><i class="fa-solid fa-folder"></i></span>
             Categorias por Linguagem
         </h1>
-
-        <div class="categories-grid" id="categoriesGrid"></div>
-
-        <div class="recent-section" style="margin-top: 2.5rem;">
-            <h2 class="section-title">
-                <span class="section-icon"><i class="fa-solid fa-code"></i></span>
+        <div class="grade-categorias" id="categoriesGrid"></div>
+        <div class="secao-recentes" style="margin-top: 2.5rem;">
+            <h2 class="titulo-secao">
+                <span class="icone-secao"><i class="fa-solid fa-code"></i></span>
                 Códigos da Categoria
             </h2>
-            <div id="categoryCodesList" class="code-list"></div>
+            <div id="categoryCodesList" class="lista-codigos"></div>
         </div>
     </div>
-
     <!-- Modal -->
     <div class="modal" id="codeModal">
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="conteudo-modal">
+            <div class="cabecalho-modal">
                 <div>
                     <h2 id="modalTitle" style="color: #00d9ff; margin-bottom: 10px;"></h2>
-                    <span id="modalLanguage" class="activity-lang"></span>
+                    <span id="modalLanguage" class="linguagem-badge"></span>
                 </div>
-                <button class="modal-close" onclick="closeModal()">×</button>
+                <button class="fechar-modal" onclick="closeModal()">×</button>
             </div>
             <p id="modalDescription" style="color: #a0a0a0; margin-bottom: 15px;"></p>
             <p id="modalDate" style="color: #666; font-size: 0.85rem; margin-bottom: 15px;"></p>
-            <div class="modal-code">
+            <div class="codigo-modal">
                 <pre><code id="modalCode"></code></pre>
             </div>
-            <button class="btn btn-primary" onclick="copyModalCode()"><i class="fa-solid fa-code"></i> Copiar Código</button>
+            <button class="btn botao-primario" onclick="copyModalCode()"><i class="fa-solid fa-code"></i> Copiar Código</button>
         </div>
     </div>
-
-    <script src="assets/js/script.js"></script>
+    <script src="assets/js/api.js"></script>
     <script src="assets/js/categories.js"></script>
 </body>
-
 </html>

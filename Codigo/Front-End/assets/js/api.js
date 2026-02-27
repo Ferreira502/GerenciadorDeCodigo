@@ -1,15 +1,16 @@
-// =====================================================================
-// api.js — camada de comunicação com o back-end Java
-// Substitui completamente o localStorage
-// =====================================================================
+// api.js — API para poder fazer a comunicacao com o banco de dados e o back-end em java
 
 const API = 'http://localhost:8080/api';
 
-// ─── Auth ─────────────────────────────────────────────────────────────
+// Verificacao e autenticacao
 
 async function getMe() {
-    const r = await fetch(`${API}/auth/me`, { credentials: 'include' });
-    return r.ok ? r.json() : null;
+    try {
+        const r = await fetch(`${API}/auth/me`, { credentials: 'include' });
+        return r.ok ? r.json() : null;
+    } catch (e) {
+        return null;
+    }
 }
 
 async function login(email, senha) {
@@ -37,7 +38,7 @@ async function logout() {
     window.location.href = 'cadastro.html';
 }
 
-// ─── Códigos ──────────────────────────────────────────────────────────
+// Codigos
 
 async function listarCodigos() {
     const r = await fetch(`${API}/codigos`, { credentials: 'include' });
@@ -63,15 +64,7 @@ async function deletarCodigo(id) {
     return r.ok;
 }
 
-async function toggleFavorito(id) {
-    const r = await fetch(`${API}/codigos/${id}/favorito`, {
-        method: 'PATCH',
-        credentials: 'include'
-    });
-    return r.ok;
-}
-
-// ─── Utilitários ─────────────────────────────────────────────────────
+// Utilitarios
 
 function formatDate(isoString) {
     return new Date(isoString).toLocaleDateString('pt-BR', {
@@ -85,14 +78,14 @@ function escapeHtml(text) {
     );
 }
 
-// ─── Toast ────────────────────────────────────────────────────────────
+// Alerta na tela
 
 function showToast(message, type = 'success') {
-    const existing = document.querySelector('.cv-toast');
+    const existing = document.querySelector('.alerta-tela');
     if (existing) existing.remove();
 
     const toast = document.createElement('div');
-    toast.className = 'cv-toast';
+    toast.className = 'alerta-tela';
     toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i> ${message}`;
     toast.style.cssText = `
         position:fixed;bottom:2rem;right:2rem;
@@ -112,7 +105,7 @@ function showToast(message, type = 'success') {
     setTimeout(() => toast.remove(), 3000);
 }
 
-// ─── Modal ────────────────────────────────────────────────────────────
+// Modal
 
 let _modalCodigo = null;
 
@@ -140,19 +133,28 @@ function copyCode(code) {
     navigator.clipboard.writeText(code.codigo).then(() => showToast('Código copiado!'));
 }
 
-// ─── Header com usuário + logout ──────────────────────────────────────
+// Header com usuario + logout
 
 async function injectUserMenu() {
     const header = document.querySelector('header');
     if (!header) return;
-    const session = await getMe();
-    if (!session) { window.location.href = 'cadastro.html'; return; }
 
-    const old = header.querySelector('.user-menu');
+    const session = await getMe();
+
+    // So redireciona para cadastro se NAO estiver ja na pagina de cadastro
+    if (!session) {
+        const estaNaCadastro = window.location.pathname.includes('cadastro');
+        if (!estaNaCadastro) {
+            window.location.href = 'cadastro.html';
+        }
+        return null;
+    }
+
+    const old = header.querySelector('.menu-usuario');
     if (old) old.remove();
 
     const menu = document.createElement('div');
-    menu.className = 'user-menu';
+    menu.className = 'menu-usuario';
     menu.style.cssText = 'display:flex;align-items:center;gap:12px;';
     menu.innerHTML =
         `<div style="text-align:right;line-height:1.3;">
@@ -168,7 +170,7 @@ async function injectUserMenu() {
     return session;
 }
 
-// ─── Fechar modal ao clicar fora ──────────────────────────────────────
+// Fechar modal ao clicar fora
 
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('codeModal');
