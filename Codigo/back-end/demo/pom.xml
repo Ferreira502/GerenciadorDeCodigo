@@ -57,7 +57,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>back-end/demo/src/main/java/com/example/MAIN/Main.java</mainClass>
+                            <mainClass>com.example.MAIN.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
