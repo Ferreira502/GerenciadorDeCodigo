@@ -10,4 +10,4 @@ RUN mvn package -DskipTests
 
 EXPOSE 8080
 
-CMD ["java", "-jar", "target/demo-1.0-SNAPSHOT-jar-with-dependencies.jar"]
+CMD sh -c "java -jar target/*.jar"
