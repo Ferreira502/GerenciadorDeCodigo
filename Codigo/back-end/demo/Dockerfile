@@ -1,14 +1,13 @@
-# Usa Java 17
-FROM eclipse-temurin:17-jdk
+FROM maven:3.9.9-eclipse-temurin-21
 
-# Define pasta dentro do container
 WORKDIR /app
 
-# Copia tudo para dentro do container
-COPY . .
+COPY pom.xml .
+RUN mvn -B -q -e -DskipTests dependency:go-offline
 
-# Compila o projeto
-RUN ./mvnw clean package -DskipTests
+COPY src ./src
+RUN mvn package -DskipTests
 
-# Comando para rodar
-CMD ["java", "-jar", "target/seuprojeto.jar"]
+EXPOSE 8080
+
+CMD ["java", "-jar", "target/*.jar"]
