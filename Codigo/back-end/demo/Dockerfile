@@ -10,4 +10,4 @@ RUN mvn package -DskipTests
 
 EXPOSE 8080
 
-CMD sh -c "java -jar target/*.jar"
+CMD sh -c "ls target && java -jar target/*.jar"
