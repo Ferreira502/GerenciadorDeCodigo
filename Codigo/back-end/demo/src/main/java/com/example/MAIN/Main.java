@@ -47,9 +47,9 @@ public class Main {
 
     public static void main(String[] args) {
         Dotenv dotenv = Dotenv.configure()
-        .ignoreIfMissing()
-        .load();
-        
+                .ignoreIfMissing()
+                .load();
+
         int porta = Integer.parseInt(dotenv.get("PORT", "8080"));
 
         CodigoDAO codigoDao = new CodigoDAO();
@@ -66,7 +66,10 @@ public class Main {
         // CORS
         before((req, res) -> {
             String origin = req.headers("Origin");
-            if (origin != null && (origin.contains("localhost") || origin.contains("127.0.0.1"))) {
+            if (origin != null && (origin.contains("localhost") ||
+                    origin.contains("127.0.0.1") ||
+                    origin.contains("vercel.app")
+            )) {
                 res.header("Access-Control-Allow-Origin", origin);
             }
             res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
