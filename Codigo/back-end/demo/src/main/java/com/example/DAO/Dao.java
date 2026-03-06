@@ -7,7 +7,9 @@ import java.sql.SQLException;
 import io.github.cdimascio.dotenv.Dotenv;
 
 public class Dao {
-    private static Dotenv dotenv = Dotenv.load();
+    private static Dotenv dotenv = Dotenv.configure()
+    .ignoreIfMissing()
+    .load();
     private static String url = dotenv.get("DB_URL", "jdbc:postgresql://ep-sweet-meadow-aihbtwad-pooler.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require");
     private static String user = dotenv.get("DB_USER", "neondb_owner");
     private static String password = dotenv.get("DB_PASSWORD", "988739002Gc.");
