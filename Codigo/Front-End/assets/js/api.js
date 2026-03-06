@@ -1,7 +1,9 @@
 // api.js — API para poder fazer a comunicacao com o banco de dados e o back-end em java
 
-const API = 'http://localhost:8080/api';
-
+const API = window.location.hostname === 'localhost' 
+    ? 'http://localhost:8080/api' 
+    : 'https://gerenciadordecodigo-2.onrender.com/api';
+    
 // Verificacao e autenticacao
 
 async function getMe() {
