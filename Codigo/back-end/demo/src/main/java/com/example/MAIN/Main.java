@@ -46,7 +46,10 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Dotenv dotenv = Dotenv.load();
+        Dotenv dotenv = Dotenv.configure()
+        .ignoreIfMissing()
+        .load();
+        
         int porta = Integer.parseInt(dotenv.get("PORT", "8080"));
 
         CodigoDAO codigoDao = new CodigoDAO();
