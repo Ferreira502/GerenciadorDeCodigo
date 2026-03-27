@@ -1,6 +1,6 @@
-#﻿# Armazena Código
+## Gerenciador De Codigo
 
-O **Armazena Código** é uma aplicação web criada para **organizar, armazenar e visualizar trechos de código** de forma simples, moderna e visual.  
+O **Gerenciador de Codigo Código** é uma aplicação web criada para **organizar, armazenar e visualizar trechos de código** de forma simples, moderna e visual.  
 Ideal para desenvolvedores que querem guardar soluções, exemplos e anotações de código em um só lugar.
 
 ---
