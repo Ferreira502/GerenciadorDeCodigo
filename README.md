@@ -1,6 +1,6 @@
 ## Nova Versao 2.0
 
-Está em desenvolvimento a nova versão do gerenciador de codigo, Caso queira utilizar a primeira versão de um git pull, e acessa localmente em sua maquina
+Está em desenvolvimento a nova versão do gerenciador de codigo, Caso queira utilizar a primeira versão de um git pull, e acessa localmente em sua maquina.
 
 ## Contribuição
 
