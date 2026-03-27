@@ -1,11 +1,11 @@
-﻿# 📦 Armazena Código
+#﻿# Armazena Código
 
 O **Armazena Código** é uma aplicação web criada para **organizar, armazenar e visualizar trechos de código** de forma simples, moderna e visual.  
 Ideal para desenvolvedores que querem guardar soluções, exemplos e anotações de código em um só lugar.
 
 ---
 
-## 🚀 Funcionalidades
+## Funcionalidades
 
 - Adicionar novos códigos  
 - Visualização organizada e intuitiva  
@@ -17,13 +17,13 @@ Ideal para desenvolvedores que querem guardar soluções, exemplos e anotações
 
 ---
 
-## 🖼️ Interface
+## Interface
 
 A aplicação conta com um **dashboard visual**, com navegação simples e ações rápidas, pensado para facilitar o uso no dia a dia do desenvolvedor.
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 - HTML  
 - CSS  
@@ -32,7 +32,7 @@ A aplicação conta com um **dashboard visual**, com navegação simples e açõ
 - PostgreSql
 ---
 
-## 🎯 Objetivo do Projeto
+## Objetivo do Projeto
 
 Este projeto foi desenvolvido com o objetivo de:
 
@@ -42,27 +42,27 @@ Este projeto foi desenvolvido com o objetivo de:
 
 ---
 
-## 🔮 Melhorias Futuras
+## Melhorias Futuras
 
-- 🏷️ Tags personalizadas  
-- 🧠 Destaque de sintaxe por linguagem  
-- 📤 Exportar e importar códigos  
-- 📱 Versão mobile aprimorada  
+- Tags personalizadas  
+- Destaque de sintaxe por linguagem  
+- Exportar e importar códigos  
+- Versão mobile aprimorada  
 
 ---
 
-## 🤝 Contribuição
+## Contribuição
 
 Contribuições são bem-vindas!  
 Sinta-se à vontade para abrir **issues**, sugerir melhorias ou enviar **pull requests**.
 
 ---
 
-## 📬 Contato
+## Contato
 
-👤 **Gabriel Ferreira**  
-📧 Email: gabrielferreirape502@gmail.com 
-💼 Telefone: 31972471784  
+**Gabriel Ferreira**  
+Email: gabrielferreirape502@gmail.com 
+Telefone: 31972471784  
 
 
 ---
