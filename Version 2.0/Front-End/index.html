@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <title>ArmazenaCodigo</title>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <a href="index.html" style="text-decoration: none; color: inherit;">
+                <span class="texto-logo">Armazena Codigo</span>
+            </a>
+        </div>
+        <nav>
+            <a href="index.html" class="active">Início</a>
+            <a href="manager.html">Meus Códigos</a>
+            <a href="categories.html">Categorias</a>
+        </nav>
+        <!-- <button class="alternar-tema" onclick="toggleTheme()">🌙</button> -->
+    </header>
+
+    <div class="container">
+        <div class="hero">
+            <div class="conteudo-destaque">
+                <h1>Bem-vindo ao Armazena Codigo</h1>
+                <p>Organize, salve e gerencie seus snippets de código de forma inteligente</p>
+                <a href="manager.html" class="btn botao-primario">
+                    <span><i class="fa-solid fa-plus"></i></span>
+                    Adicionar Novo Código
+                </a>
+
+                <div class="estatisticas-destaque">
+                    <div class="cartao-estatistica">
+                        <div class="numero-estatistica" id="totalCodes">0</div>
+                        <div class="rotulo-estatistica">Códigos Salvos</div>
+                    </div>
+                    <div class="cartao-estatistica">
+                        <div class="numero-estatistica" id="totalLanguages">0</div>
+                        <div class="rotulo-estatistica">Linguagens</div>
+                    </div>
+                    <div class="cartao-estatistica">
+                        <div class="numero-estatistica" id="thisMonth">0</div>
+                        <div class="rotulo-estatistica">Adicionados Este Mês</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 2.5rem;">
+            <h2 class="titulo-secao">
+                <span class="icone-secao"><i class="fa-solid fa-fire"></i></span>
+                Ações Rápidas
+            </h2>
+            <div class="grade-acoes">
+                <a href="manager.html" class="cartao-acao">
+                    <div class="icone-acao"><i class="fa-solid fa-code"></i></div>
+                    <h3>Novo Código</h3>
+                    <p>Adicione um novo código ao seu repositório pessoal</p>
+                </a>
+                <a href="manager.html" class="cartao-acao">
+                    <div class="icone-acao"><i class="fa-solid fa-magnifying-glass"></i></div>
+                    <h3>Buscar Código</h3>
+                    <p>Encontre rapidamente seus códigos salvos</p>
+                </a>
+                <a href="categories.html" class="cartao-acao">
+                    <div class="icone-acao"><i class="fa-solid fa-layer-group"></i></div>
+                    <h3>Por Categoria</h3>
+                    <p>Navegue pelos códigos por linguagem</p>
+                </a>
+                <a href="manager.html#favorites" class="cartao-acao">
+                    <div class="icone-acao"><i class="fa-solid fa-star"></i></div>
+                    <h3>Favoritos</h3>
+                    <p>Acesse seus códigos favoritos</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="secao-recentes">
+            <h2 class="titulo-secao">
+                <span class="icone-secao"><i class="fa-solid fa-clock"></i></span>
+                Atividade Recente
+            </h2>
+            <div class="lista-atividades" id="recentActivity"></div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="codeModal">
+        <div class="conteudo-modal">
+            <div class="cabecalho-modal">
+                <div>
+                    <h2 id="modalTitle" style="color: #00d9ff; margin-bottom: 10px;"></h2>
+                    <span id="modalLanguage" class="linguagem-badge"></span>
+                </div>
+                <button class="fechar-modal" onclick="closeModal()">×</button>
+            </div>
+            <p id="modalDescription" style="color: #a0a0a0; margin-bottom: 15px;"></p>
+            <p id="modalDate" style="color: #666; font-size: 0.85rem; margin-bottom: 15px;"></p>
+            <div class="codigo-modal">
+                <pre><code id="modalCode"></code></pre>
+            </div>
+            <button class="btn botao-primario" onclick="copyModalCode()"><i class="fa-solid fa-code"></i> Copiar Código</button>
+        </div>
+    </div>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/home.js"></script>
+</body>
+
+</html>
