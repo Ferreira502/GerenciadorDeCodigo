@@ -23,9 +23,10 @@ import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
 import io.github.cdimascio.dotenv.Dotenv;
-import static spark.Spark.before;
+import static spark.Spark.afterAfter;
 import static spark.Spark.delete;
 import static spark.Spark.get;
+import static spark.Spark.halt;
 import static spark.Spark.options;
 import static spark.Spark.port;
 import static spark.Spark.post;
@@ -77,7 +78,7 @@ public class Main {
         return req.cookie("userId") != null;
     }
 
-    // Pega só o primeiro valor caso venha duplicado: "https://x.vercel.app, https://x.vercel.app"
+    // Pega só o primeiro valor caso venha duplicado
     private static String origemLimpa(String origin) {
         if (origin == null) {
             return null;
@@ -112,26 +113,29 @@ public class Main {
         port(porta);
         System.out.println("Servidor rodando na porta " + porta);
 
-        before((req, res) -> {
-            String origin = req.headers("Origin");
-            if (origemPermitida(origin)) {
-                res.header("Access-Control-Allow-Origin", origemLimpa(origin));
+        // Responde preflight OPTIONS antes de qualquer filtro
+        options("/*", (req, res) -> {
+            String origin = origemLimpa(req.headers("Origin"));
+            if (origin != null && origemPermitida(origin)) {
+                res.header("Access-Control-Allow-Origin", origin);
             }
             res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
             res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, Cookie");
             res.header("Access-Control-Allow-Credentials", "true");
+            halt(200, "OK");
+            return null;
         });
 
-        options("/*", (req, res) -> {
-            String origin = req.headers("Origin");
-            if (origemPermitida(origin)) {
-                res.header("Access-Control-Allow-Origin", origemLimpa(origin));
+        // afterAfter garante que o header CORS sai correto em TODAS as respostas,
+        // sobrescrevendo qualquer valor duplicado que o proxy do Render possa ter injetado
+        afterAfter((req, res) -> {
+            String origin = origemLimpa(req.headers("Origin"));
+            if (origin != null && origemPermitida(origin)) {
+                res.header("Access-Control-Allow-Origin", origin);
             }
             res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
             res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, Cookie");
             res.header("Access-Control-Allow-Credentials", "true");
-            res.status(200);
-            return "OK";
         });
 
         // AUTH
