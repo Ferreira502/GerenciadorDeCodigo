@@ -4,18 +4,22 @@ const API = (window.location.hostname === 'localhost' || window.location.hostnam
     ? 'http://localhost:8080/api'
     : 'https://gerenciadordecodigo-2.onrender.com/api';
 
-// ── AUTH ──────────────────────────────────────────────────────────────────────
+// AUTH 
 
 async function getMe() {
     try {
-        const r = await fetch(`${API}/auth/me`, { credentials: 'include' });
+        const r = await fetch(`${API}/auth/me`, {
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' }
+        });
         return r.ok ? r.json() : null;
     } catch { return null; }
 }
 
 async function login(email, senha) {
     const r = await fetch(`${API}/auth/login`, {
-        method: 'POST', credentials: 'include',
+        method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, senha })
     });
@@ -24,7 +28,8 @@ async function login(email, senha) {
 
 async function cadastro(nome, email, senha) {
     const r = await fetch(`${API}/auth/cadastro`, {
-        method: 'POST', credentials: 'include',
+        method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nome, email, senha })
     });
@@ -32,11 +37,14 @@ async function cadastro(nome, email, senha) {
 }
 
 async function logout() {
-    await fetch(`${API}/auth/logout`, { method: 'POST', credentials: 'include' });
+    await fetch(`${API}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include'
+    });
     window.location.href = 'cadastro.html';
 }
 
-// ── CÓDIGOS ───────────────────────────────────────────────────────────────────
+// CODIGOS
 
 async function listarCodigos() {
     const r = await fetch(`${API}/codigos`, { credentials: 'include' });
@@ -46,7 +54,8 @@ async function listarCodigos() {
 
 async function salvarCodigo(titulo, linguagem, descricao, codigo, grupos = []) {
     const r = await fetch(`${API}/codigos`, {
-        method: 'POST', credentials: 'include',
+        method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ titulo, linguagem, descricao, codigo, grupos })
     });
@@ -54,11 +63,14 @@ async function salvarCodigo(titulo, linguagem, descricao, codigo, grupos = []) {
 }
 
 async function deletarCodigo(id) {
-    const r = await fetch(`${API}/codigos/${id}`, { method: 'DELETE', credentials: 'include' });
+    const r = await fetch(`${API}/codigos/${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+    });
     return r.ok;
 }
 
-// ── GRUPOS ────────────────────────────────────────────────────────────────────
+// GRUPOS
 
 async function listarGrupos() {
     const r = await fetch(`${API}/grupos`, { credentials: 'include' });
@@ -68,7 +80,8 @@ async function listarGrupos() {
 
 async function criarGrupo(nome, descricao, cor) {
     const r = await fetch(`${API}/grupos`, {
-        method: 'POST', credentials: 'include',
+        method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nome, descricao, cor })
     });
@@ -77,7 +90,8 @@ async function criarGrupo(nome, descricao, cor) {
 
 async function atualizarGrupo(id, nome, descricao, cor) {
     const r = await fetch(`${API}/grupos/${id}`, {
-        method: 'PUT', credentials: 'include',
+        method: 'PUT',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nome, descricao, cor })
     });
@@ -85,11 +99,14 @@ async function atualizarGrupo(id, nome, descricao, cor) {
 }
 
 async function deletarGrupo(id) {
-    const r = await fetch(`${API}/grupos/${id}`, { method: 'DELETE', credentials: 'include' });
+    const r = await fetch(`${API}/grupos/${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+    });
     return r.ok;
 }
 
-// ── EXERCÍCIOS ────────────────────────────────────────────────────────────────
+// EXERCICIOS 
 
 async function listarExercicios() {
     const r = await fetch(`${API}/exercicios`, { credentials: 'include' });
@@ -99,7 +116,8 @@ async function listarExercicios() {
 
 async function criarExercicio(dados) {
     const r = await fetch(`${API}/exercicios`, {
-        method: 'POST', credentials: 'include',
+        method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dados)
     });
@@ -108,7 +126,8 @@ async function criarExercicio(dados) {
 
 async function atualizarExercicio(id, dados) {
     const r = await fetch(`${API}/exercicios/${id}`, {
-        method: 'PUT', credentials: 'include',
+        method: 'PUT',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dados)
     });
@@ -116,11 +135,14 @@ async function atualizarExercicio(id, dados) {
 }
 
 async function deletarExercicio(id) {
-    const r = await fetch(`${API}/exercicios/${id}`, { method: 'DELETE', credentials: 'include' });
+    const r = await fetch(`${API}/exercicios/${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+    });
     return r.ok;
 }
 
-// ── UTILITÁRIOS ───────────────────────────────────────────────────────────────
+// UTILITARIOS
 
 function formatDate(iso) {
     if (!iso) return '—';
@@ -133,7 +155,7 @@ function escapeHtml(t) {
     );
 }
 
-// ── TOAST ─────────────────────────────────────────────────────────────────────
+// TOAST
 
 function showToast(msg, tipo = 'success') {
     const ex = document.querySelector('.toast-ac');
@@ -156,7 +178,7 @@ function showToast(msg, tipo = 'success') {
     setTimeout(() => t.remove(), 3200);
 }
 
-// ── MODAL CÓDIGO ──────────────────────────────────────────────────────────────
+// MODAL CODIGO 
 
 let _modalCodigo = null;
 
@@ -178,7 +200,7 @@ function copyModalCode() {
 
 function copyCode(c) { navigator.clipboard.writeText(c.codigo).then(() => showToast('Código copiado!')); }
 
-// ── MENU DO USUÁRIO ───────────────────────────────────────────────────────────
+// MENU DO USUARIO 
 
 async function injectUserMenu() {
     const session = await getMe();
