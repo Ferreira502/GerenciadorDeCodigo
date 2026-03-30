@@ -9,4 +9,4 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 # Rodar o jar
-CMD ["java", "-jar", "target/demo-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "target/demo-1.0-SNAPSHOT-shaded.jar"]
