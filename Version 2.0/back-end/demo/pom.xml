@@ -49,6 +49,8 @@
     </dependencies>
 
     <build>
+        <finalName>app</finalName>
+
         <plugins>
 
             <plugin>
@@ -73,11 +75,13 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>com.example.MAIN.Main</mainClass>
                                 </transformer>
                             </transformers>
+
                         </configuration>
                     </execution>
                 </executions>

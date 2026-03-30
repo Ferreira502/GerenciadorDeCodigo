@@ -6,4 +6,4 @@ COPY . .
 
 RUN mvn clean package -DskipTests
 
-CMD ["sh", "-c", "java -jar $(ls target/*shaded.jar)"]
+CMD ["java", "-jar", "target/app.jar"]
