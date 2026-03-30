@@ -11,9 +11,9 @@ public class Dao {
         .ignoreIfMissing()
         .load();
 
-    private static String url      = dotenv.get("DB_URL",      "jdbc:postgresql://localhost:5432/Armazenador");
-    private static String user     = dotenv.get("DB_USER",     "postgres");
-    private static String password = dotenv.get("DB_PASSWORD", "988739002Gc.");
+    private static String url      = dotenv.get("DB_URL",      "jdbc:postgresql://ep-tiny-mountain-an5xf3uj-pooler.c-6.us-east-1.aws.neon.tech/neondb?sslmode=require");
+    private static String user     = dotenv.get("DB_USER",     "neondb_owner");
+    private static String password = dotenv.get("DB_PASSWORD", "npg_jmOR1gub2DHS");
 
     public Connection connect() throws SQLException {
         return DriverManager.getConnection(url, user, password);
