@@ -2,9 +2,9 @@
 
 const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://localhost:8080/api'
-    : 'https://gerenciadordecodigo-2.onrender.com/api';
+    : 'https://gerenciadordecodigo.onrender.com/api';
 
-// AUTH 
+// ── AUTH ──────────────────────────────────────────────────────────────────────
 
 async function getMe() {
     try {
@@ -44,7 +44,7 @@ async function logout() {
     window.location.href = 'cadastro.html';
 }
 
-// CODIGOS
+// ── CÓDIGOS ───────────────────────────────────────────────────────────────────
 
 async function listarCodigos() {
     const r = await fetch(`${API}/codigos`, { credentials: 'include' });
@@ -70,7 +70,7 @@ async function deletarCodigo(id) {
     return r.ok;
 }
 
-// GRUPOS
+// ── GRUPOS ────────────────────────────────────────────────────────────────────
 
 async function listarGrupos() {
     const r = await fetch(`${API}/grupos`, { credentials: 'include' });
@@ -106,7 +106,7 @@ async function deletarGrupo(id) {
     return r.ok;
 }
 
-// EXERCICIOS 
+// ── EXERCÍCIOS ────────────────────────────────────────────────────────────────
 
 async function listarExercicios() {
     const r = await fetch(`${API}/exercicios`, { credentials: 'include' });
@@ -142,7 +142,7 @@ async function deletarExercicio(id) {
     return r.ok;
 }
 
-// UTILITARIOS
+// ── UTILITÁRIOS ───────────────────────────────────────────────────────────────
 
 function formatDate(iso) {
     if (!iso) return '—';
@@ -155,7 +155,7 @@ function escapeHtml(t) {
     );
 }
 
-// TOAST
+// ── TOAST ─────────────────────────────────────────────────────────────────────
 
 function showToast(msg, tipo = 'success') {
     const ex = document.querySelector('.toast-ac');
@@ -178,7 +178,7 @@ function showToast(msg, tipo = 'success') {
     setTimeout(() => t.remove(), 3200);
 }
 
-// MODAL CODIGO 
+// ── MODAL CÓDIGO ──────────────────────────────────────────────────────────────
 
 let _modalCodigo = null;
 
@@ -200,7 +200,7 @@ function copyModalCode() {
 
 function copyCode(c) { navigator.clipboard.writeText(c.codigo).then(() => showToast('Código copiado!')); }
 
-// MENU DO USUARIO 
+// ── MENU DO USUÁRIO ───────────────────────────────────────────────────────────
 
 async function injectUserMenu() {
     const session = await getMe();
