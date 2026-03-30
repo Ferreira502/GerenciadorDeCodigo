@@ -2,12 +2,11 @@ FROM maven:3.9.9-eclipse-temurin-21
 
 WORKDIR /app
 
-COPY pom.xml .
-RUN mvn -B -q -e -DskipTests dependency:go-offline
+# Copia tudo (não só pom.xml)
+COPY . .
 
-COPY src ./src
-RUN mvn package -DskipTests
+# Build do projeto
+RUN mvn clean package -DskipTests
 
-EXPOSE 8080
-
-CMD sh -c "ls target && java -jar target/*.jar"
+# Rodar o jar
+CMD ["java", "-jar", "target/demo-0.0.1-SNAPSHOT.jar"]
