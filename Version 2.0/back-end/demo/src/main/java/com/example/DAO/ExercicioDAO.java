@@ -37,7 +37,7 @@ public class ExercicioDAO {
         return e;
     }
 
-    // ── Cadastrar novo exercício
+    // Cadastrar novo exercicio
     public int cadastrar(Exercicio ex) throws SQLException {
         String sql = """
             INSERT INTO exercicio
@@ -66,7 +66,7 @@ public class ExercicioDAO {
         }
     }
 
-    // ── Listar por usuário 
+    // Listar por usuario 
     public List<Exercicio> listarPorUsuario(int usuarioId) throws SQLException {
         String sql = "SELECT * FROM exercicio WHERE usuario_id = ? ORDER BY criado_em DESC";
         List<Exercicio> lista = new ArrayList<>();
@@ -82,7 +82,7 @@ public class ExercicioDAO {
         return lista;
     }
 
-    // ── Buscar por ID 
+    // Buscar por ID 
     public Exercicio getPorId(int id) throws SQLException {
         String sql = "SELECT * FROM exercicio WHERE id = ?";
 
@@ -94,7 +94,7 @@ public class ExercicioDAO {
         }
     }
 
-    // ── Atualizar 
+    // Atualizar 
     public boolean atualizar(Exercicio ex) throws SQLException {
         String sql = """
             UPDATE exercicio SET
@@ -122,7 +122,7 @@ public class ExercicioDAO {
         }
     }
 
-    // ── Deletar
+    // Deletar
     public boolean deletar(int id, int usuarioId) throws SQLException {
         String sql = "DELETE FROM exercicio WHERE id = ? AND usuario_id = ?";
 

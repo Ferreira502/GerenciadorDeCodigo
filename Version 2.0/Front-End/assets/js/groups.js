@@ -1,106 +1,131 @@
 // groups.js — Página de grupos
 
-const CORES_GRUPO = ['#00d9ff','#00ffc8','#9d6af5','#ffd166','#ff4d6d','#ff8c42','#60b4ff','#f77fff'];
+const CORES = ['#00d9ff','#00ffc8','#9d6af5','#ffd166','#ff4d6d','#ff8c42','#60b4ff','#f77fff'];
 
-let grupos  = [];
-let codigos = [];
+let grupos          = [];
+let codigos         = [];
+let grupoExpandidoId = null;
+let codigoModal     = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
     await injectUserMenu();
     [grupos, codigos] = await Promise.all([listarGrupos(), listarCodigos()]);
-    renderizarGrupos();
-    atualizarBadge();
-    if (location.hash === '#novo') abrirModalGrupo();
+    renderizar();
+    document.getElementById('badgeGrupos').textContent = grupos.length;
+    document.getElementById('modal').addEventListener('click', e => { if (e.target.id === 'modal') fecharModal(); });
+    document.getElementById('codeModal').addEventListener('click', e => { if (e.target.id === 'codeModal') fecharModalCodigo(); });
 });
 
-// ── Modal ─────────────────────────────────────────────────────────────────────
+// ── Modal grupo ───────────────────────────────────────────────────────────────
 
-function abrirModalGrupo(grupo = null) {
-    document.getElementById('editandoGrupoId').value = grupo ? grupo.id : '';
-    document.getElementById('grupoNome').value       = grupo ? grupo.nome : '';
-    document.getElementById('grupoDescricao').value  = grupo ? (grupo.descricao || '') : '';
-    document.getElementById('tituloModalGrupo').textContent = grupo ? 'Editar Grupo' : 'Criar Novo Grupo';
-    renderizarSeletorCores(grupo ? grupo.cor : CORES_GRUPO[0]);
-    document.getElementById('modalGrupo').classList.add('active');
+function abrirModal(g = null) {
+    document.getElementById('editId').value    = g ? g.id : '';
+    document.getElementById('nome').value      = g ? g.nome : '';
+    document.getElementById('descricao').value = g ? (g.descricao || '') : '';
+    document.getElementById('modalTitulo').textContent = g ? 'Editar Grupo' : 'Criar Grupo';
+    renderCores(g ? g.cor : CORES[0]);
+    document.getElementById('modal').classList.add('active');
 }
 
-function fecharModalGrupo() {
-    document.getElementById('modalGrupo').classList.remove('active');
+function fecharModal() {
+    document.getElementById('modal').classList.remove('active');
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const modal = document.getElementById('modalGrupo');
-    if (modal) modal.addEventListener('click', e => { if (e.target === modal) fecharModalGrupo(); });
-});
-
-function renderizarSeletorCores(selecionada) {
-    document.getElementById('seletorCores').innerHTML = CORES_GRUPO.map(c =>
-        `<div class="cor-swatch${c === selecionada ? ' selecionada' : ''}"
-              style="background:${c}" data-cor="${c}"
-              onclick="selecionarCor('${c}')"></div>`
+function renderCores(sel) {
+    document.getElementById('seletorCores').innerHTML = CORES.map(c =>
+        `<div class="cor-swatch${c === sel ? ' selecionada' : ''}" style="background:${c}"
+              onclick="document.querySelectorAll('.cor-swatch').forEach(s=>s.classList.remove('selecionada'));this.classList.add('selecionada')"></div>`
     ).join('');
 }
 
-function selecionarCor(cor) {
-    document.querySelectorAll('.cor-swatch').forEach(s =>
-        s.classList.toggle('selecionada', s.dataset.cor === cor)
-    );
-}
-
-function getCorSelecionada() {
+function getCorSel() {
     const s = document.querySelector('.cor-swatch.selecionada');
-    return s ? s.dataset.cor : CORES_GRUPO[0];
+    return s ? s.style.background : CORES[0];
 }
 
-// ── Salvar ────────────────────────────────────────────────────────────────────
+// ── Modal código ──────────────────────────────────────────────────────────────
 
-async function salvarGrupo() {
-    const nome      = document.getElementById('grupoNome').value.trim();
-    const descricao = document.getElementById('grupoDescricao').value.trim();
-    const cor       = getCorSelecionada();
-    const editId    = document.getElementById('editandoGrupoId').value;
+function verCodigo(c, event) {
+    event.stopPropagation();
+    codigoModal = c;
+    document.getElementById('modalTitle').textContent       = c.titulo;
+    document.getElementById('modalLanguage').textContent    = c.linguagem;
+    document.getElementById('modalDescription').textContent = c.descricao || 'Sem descrição';
+    document.getElementById('modalDate').textContent        = 'Criado em ' + formatDate(c.criadoEm);
+    document.getElementById('modalCode').textContent        = c.codigo;
+    document.getElementById('codeModal').classList.add('active');
+}
 
-    if (!nome) { showToast('Nome do grupo é obrigatório.', 'error'); return; }
+function fecharModalCodigo() {
+    document.getElementById('codeModal').classList.remove('active');
+}
+
+function copiarModalCodigo() {
+    if (codigoModal) navigator.clipboard.writeText(codigoModal.codigo).then(() => showToast('Código copiado!'));
+}
+
+// ── Expandir / recolher grupo ─────────────────────────────────────────────────
+
+function toggleGrupo(id, event) {
+    if (event.target.closest('.grupo-acoes')) return;
+    grupoExpandidoId = grupoExpandidoId === id ? null : id;
+    renderizar();
+}
+
+// ── CRUD ──────────────────────────────────────────────────────────────────────
+
+async function salvar() {
+    const nome   = document.getElementById('nome').value.trim();
+    const desc   = document.getElementById('descricao').value.trim();
+    const cor    = getCorSel();
+    const editId = document.getElementById('editId').value;
+
+    if (!nome) { showToast('Nome é obrigatório.', 'error'); return; }
 
     let ok, data;
     if (editId) {
-        ({ ok, data } = await atualizarGrupo(parseInt(editId), nome, descricao, cor));
+        ({ ok, data } = await atualizarGrupo(parseInt(editId), nome, desc, cor));
     } else {
-        ({ ok, data } = await criarGrupo(nome, descricao, cor));
+        ({ ok, data } = await criarGrupo(nome, desc, cor));
     }
 
-    if (!ok) { showToast(data.erro || 'Erro ao salvar grupo.', 'error'); return; }
+    if (!ok) { showToast(data.erro || 'Erro ao salvar.', 'error'); return; }
 
     if (editId) {
-        grupos = grupos.map(g => g.id === parseInt(editId) ? data : g);
+        grupos = grupos.map(g => g.id === parseInt(editId) ? { ...g, nome, descricao: desc, cor } : g);
         showToast('Grupo atualizado!');
     } else {
         grupos.unshift(data);
         showToast('Grupo criado!');
     }
 
-    fecharModalGrupo();
-    renderizarGrupos();
-    atualizarBadge();
+    fecharModal();
+    renderizar();
+    document.getElementById('badgeGrupos').textContent = grupos.length;
 }
 
-async function excluirGrupo(id) {
+async function excluir(id, event) {
+    event.stopPropagation();
     if (!confirm('Remover este grupo? Os códigos não serão apagados.')) return;
     const ok = await deletarGrupo(id);
-    if (ok) {
-        grupos = grupos.filter(g => g.id !== id);
-        renderizarGrupos();
-        atualizarBadge();
-        showToast('Grupo removido.', 'info');
-    } else {
-        showToast('Erro ao remover grupo.', 'error');
-    }
+    if (!ok) { showToast('Erro ao excluir.', 'error'); return; }
+    grupos = grupos.filter(g => g.id !== id);
+    if (grupoExpandidoId === id) grupoExpandidoId = null;
+    renderizar();
+    document.getElementById('badgeGrupos').textContent = grupos.length;
+    showToast('Grupo removido.');
+}
+
+function editarGrupo(g, event) {
+    event.stopPropagation();
+    abrirModal(g);
 }
 
 // ── Render ────────────────────────────────────────────────────────────────────
 
-function renderizarGrupos() {
+function renderizar() {
     const el = document.getElementById('gradeGrupos');
+
     if (!grupos.length) {
         el.innerHTML = `
             <div class="estado-vazio" style="grid-column:1/-1">
@@ -113,36 +138,67 @@ function renderizarGrupos() {
     }
 
     el.innerHTML = grupos.map(g => {
-        const codsGrupo = codigos.filter(c => (c.grupos || []).includes(g.id));
-        const langs = [...new Set(codsGrupo.map(c => c.linguagem))].filter(Boolean);
+        const codsDoGrupo = codigos.filter(c => (c.grupos || []).includes(g.id));
+        const qtd         = codsDoGrupo.length;
+        const expandido   = grupoExpandidoId === g.id;
+
+        const itensHtml = codsDoGrupo.length
+            ? codsDoGrupo.map(c => `
+                <div class="item-codigo-grupo" onclick="verCodigo(${JSON.stringify(c).replace(/"/g,'&quot;')}, event)">
+                    <div class="item-codigo-grupo-topo">
+                        <div class="item-codigo-grupo-titulo">${escapeHtml(c.titulo)}</div>
+                        <span class="item-codigo-grupo-badge">${escapeHtml(c.linguagem)}</span>
+                    </div>
+                    ${c.descricao ? `<div class="item-codigo-grupo-desc">${escapeHtml(c.descricao)}</div>` : ''}
+                    <div class="item-codigo-grupo-previa">${escapeHtml((c.codigo || '').substring(0, 120))}</div>
+                    <div class="item-codigo-grupo-rodape">
+                        <span class="item-codigo-grupo-data">${formatDate(c.criadoEm)}</span>
+                        <div class="item-codigo-grupo-acoes" onclick="event.stopPropagation()">
+                            <button class="btn-icone" onclick="verCodigo(${JSON.stringify(c).replace(/"/g,'&quot;')}, event)" title="Ver código">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button class="btn-icone" onclick="navigator.clipboard.writeText(${JSON.stringify(c.codigo).replace(/"/g,'&quot;')}).then(()=>showToast('Copiado!'))" title="Copiar">
+                                <i class="fa-solid fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>`).join('')
+            : `<div class="grupo-vazio">
+                    <i class="fa-solid fa-inbox"></i>
+                    Nenhum código neste grupo ainda.
+               </div>`;
 
         return `
-        <div class="cartao-grupo">
+        <div class="cartao-grupo${expandido ? ' expandido' : ''}" onclick="toggleGrupo(${g.id}, event)">
             <div class="grupo-cabecalho">
                 <div class="grupo-ponto" style="background:${g.cor}"></div>
                 <span class="grupo-nome">${escapeHtml(g.nome)}</span>
                 <div class="grupo-acoes">
-                    <button class="btn-icone" onclick="abrirModalGrupo(${JSON.stringify(g).replace(/"/g,'&quot;')})" title="Editar">
+                    <button class="btn-icone" onclick="editarGrupo(${JSON.stringify(g).replace(/"/g,'&quot;')}, event)" title="Editar">
                         <i class="fa-solid fa-pen"></i>
                     </button>
-                    <button class="btn-icone perigo" onclick="excluirGrupo(${g.id})" title="Excluir">
+                    <button class="btn-icone perigo" onclick="excluir(${g.id}, event)" title="Excluir">
                         <i class="fa-solid fa-trash"></i>
                     </button>
                 </div>
+                <i class="fa-solid fa-chevron-down grupo-chevron"></i>
             </div>
             <div class="grupo-corpo">
                 ${g.descricao ? `<div class="grupo-desc">${escapeHtml(g.descricao)}</div>` : ''}
-                <div class="grupo-linguagens">
-                    ${langs.map(l => `<span class="linguagem-badge">${l}</span>`).join('') ||
-                      '<span style="font-size:0.72rem;color:var(--texto3)">Sem códigos</span>'}
+                <div class="grupo-contagem-linha">
+                    <span class="grupo-info">${qtd} ${qtd === 1 ? 'código' : 'códigos'}</span>
+                    <span class="grupo-expandir-hint">${expandido ? 'fechar ↑' : 'ver códigos ↓'}</span>
                 </div>
-                <div class="grupo-contagem">${codsGrupo.length} ${codsGrupo.length === 1 ? 'código' : 'códigos'}</div>
+            </div>
+            <div class="grupo-expandido-conteudo">
+                <div class="grupo-expandido-inner">
+                    <div class="grupo-expandido-titulo">
+                        <i class="fa-solid fa-code" style="color:#9d6af5;margin-right:5px"></i>
+                        Códigos do grupo
+                    </div>
+                    ${itensHtml}
+                </div>
             </div>
         </div>`;
     }).join('');
-}
-
-function atualizarBadge() {
-    const el = document.getElementById('badgeGrupos');
-    if (el) el.textContent = grupos.length;
 }

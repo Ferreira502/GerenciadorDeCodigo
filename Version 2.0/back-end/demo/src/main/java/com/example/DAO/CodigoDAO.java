@@ -36,7 +36,7 @@ public class CodigoDAO {
         }
     }
 
-    // Listar todos os cddigos de um usuário
+    // Listar todos os cddigos de um usuario
     public List<Codigo> listarCodigosPorUsuario(int usuarioId) throws SQLException {
         String sql = "SELECT * FROM codigo WHERE usuario_id = ? ORDER BY criado_em DESC";
         List<Codigo> codigos = new ArrayList<>();

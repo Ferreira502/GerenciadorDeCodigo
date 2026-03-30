@@ -13,7 +13,7 @@ public class GrupoDAO {
 
     private final Dao dao = new Dao();
 
-    // ── mapeamento ResultSet → Grupo ──────────────────────────────────────────
+    // mapeamento ResultSet → Grupo 
     private Grupo mapear(ResultSet rs) throws SQLException {
         Grupo g = new Grupo();
         g.setId(rs.getInt("id"));
@@ -25,7 +25,7 @@ public class GrupoDAO {
         return g;
     }
 
-    // ── cadastrar (recebe objeto Grupo) — chamado em Main: grupoDao.cadastrar(g) ──
+    // cadastrar (recebe objeto Grupo) — chamado em Main: grupoDao.cadastrar(g) 
     public int cadastrar(Grupo grupo) throws SQLException {
         String sql = "INSERT INTO grupo (nome, descricao, cor, usuario_id) VALUES (?,?,?,?) RETURNING id";
         try (Connection c = dao.connect(); PreparedStatement ps = c.prepareStatement(sql)) {
@@ -38,7 +38,7 @@ public class GrupoDAO {
         }
     }
 
-    // ── listarPorUsuario — chamado em Main: grupoDao.listarPorUsuario(userId) ──
+    // listarPorUsuario — chamado em Main: grupoDao.listarPorUsuario(userId) 
     public List<Grupo> listarPorUsuario(int usuarioId) throws SQLException {
         String sql = "SELECT * FROM grupo WHERE usuario_id = ? ORDER BY criado_em DESC";
         List<Grupo> lista = new ArrayList<>();
@@ -52,7 +52,7 @@ public class GrupoDAO {
         return lista;
     }
 
-    // ── getPorId — chamado em Main: grupoDao.getPorId(id) ────────────────────
+    // getPorId — chamado em Main: grupoDao.getPorId(id) 
     public Grupo getPorId(int id) throws SQLException {
         String sql = "SELECT * FROM grupo WHERE id = ?";
         try (Connection c = dao.connect(); PreparedStatement ps = c.prepareStatement(sql)) {
@@ -62,7 +62,7 @@ public class GrupoDAO {
         }
     }
 
-    // ── atualizar (recebe objeto Grupo) — chamado em Main: grupoDao.atualizar(g) ──
+    // atualizar (recebe objeto Grupo) — chamado em Main: grupoDao.atualizar(g) 
     public boolean atualizar(Grupo grupo) throws SQLException {
         String sql = "UPDATE grupo SET nome=?, descricao=?, cor=? WHERE id=? AND usuario_id=?";
         try (Connection c = dao.connect(); PreparedStatement ps = c.prepareStatement(sql)) {
@@ -75,7 +75,7 @@ public class GrupoDAO {
         }
     }
 
-    // ── deletar — chamado em Main: grupoDao.deletar(gid, userId) ─────────────
+    // deletar — chamado em Main: grupoDao.deletar(gid, userId) ─
     public boolean deletar(int id, int usuarioId) throws SQLException {
         String sql = "DELETE FROM grupo WHERE id=? AND usuario_id=?";
         try (Connection c = dao.connect(); PreparedStatement ps = c.prepareStatement(sql)) {
@@ -85,7 +85,7 @@ public class GrupoDAO {
         }
     }
 
-    // ── listarGruposDoCodigo — chamado em Main: grupoDao.listarGruposDoCodigo(codigoId) ──
+    // listarGruposDoCodigo — chamado em Main: grupoDao.listarGruposDoCodigo(codigoId) 
     public List<Integer> listarGruposDoCodigo(int codigoId) throws SQLException {
         String sql = "SELECT grupo_id FROM codigo_grupo WHERE codigo_id=?";
         List<Integer> ids = new ArrayList<>();
@@ -99,10 +99,10 @@ public class GrupoDAO {
         return ids;
     }
 
-    // ── definirGruposDoCodigo — chamado em Main: grupoDao.definirGruposDoCodigo(codigoId, gids) ──
-    // Remove todos os grupos do código e insere os novos
+    // definirGruposDoCodigo — chamado em Main: grupoDao.definirGruposDoCodigo(codigoId, gids) 
+    // Remove todos os grupos do codigo e insere os novos
     public void definirGruposDoCodigo(int codigoId, List<Integer> grupoIds) throws SQLException {
-        // Remove vínculos atuais
+        // Remove vinculos atuais
         try (Connection c = dao.connect(); PreparedStatement ps = c.prepareStatement("DELETE FROM codigo_grupo WHERE codigo_id=?")) {
             ps.setInt(1, codigoId);
             ps.executeUpdate();
@@ -111,7 +111,7 @@ public class GrupoDAO {
             return;
         }
 
-        // Insere os novos vínculos
+        // Insere os novos vinculos
         String sql = "INSERT INTO codigo_grupo (codigo_id, grupo_id) VALUES (?,?) ON CONFLICT DO NOTHING";
         try (Connection c = dao.connect(); PreparedStatement ps = c.prepareStatement(sql)) {
             for (int gid : grupoIds) {

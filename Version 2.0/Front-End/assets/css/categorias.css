@@ -1,0 +1,58 @@
+/* categories.css — estilos exclusivos da página Categorias */
+
+/* ── Grade de categorias ── */
+.grade-categorias {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ── Cartão de categoria ── */
+.cartao-categoria {
+    background: var(--bg3);
+    border: 1px solid var(--borda);
+    border-radius: 13px;
+    padding: 1.5rem 1.2rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.25s;
+}
+
+.cartao-categoria:hover {
+    border-color: rgba(0, 217, 255, 0.2);
+    transform: translateY(-4px);
+}
+
+.icone-categoria {
+    font-size: 2.2rem;
+    margin-bottom: 0.7rem;
+    color: var(--ciano);
+}
+
+.nome-categoria {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--texto1);
+    margin-bottom: 0.3rem;
+}
+
+.contagem-categoria {
+    font-size: 0.78rem;
+    color: var(--ciano);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Lista de códigos da categoria ── */
+.secao-recentes {
+    background: var(--bg3);
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+    padding: 1.3rem;
+}
+
+.lista-codigos {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}

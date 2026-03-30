@@ -33,7 +33,7 @@ import static spark.Spark.put;
 
 public class Main {
 
-    // ── Adapter LocalDateTime ─────────────────────────────────────────────────
+    // Adapter LocalDateTime 
     private static class LocalDateTimeAdapter
             extends com.google.gson.TypeAdapter<LocalDateTime> {
 
@@ -58,7 +58,7 @@ public class Main {
         }
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    // Helpers
     private static JsonObject erro(String msg) {
         JsonObject j = new JsonObject();
         j.addProperty("erro", msg);
@@ -80,7 +80,7 @@ public class Main {
         return req.cookie("userId") != null;
     }
 
-    // ── Main ──────────────────────────────────────────────────────────────────
+    // Main 
     public static void main(String[] args) {
 
         Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
@@ -98,7 +98,7 @@ public class Main {
         port(porta);
         System.out.println("Servidor rodando na porta " + porta);
 
-        // ── CORS ──────────────────────────────────────────────────────────────
+        // CORS
         before((req, res) -> {
             String origin = req.headers("Origin");
             if (origin != null && (origin.contains("localhost")
@@ -113,9 +113,8 @@ public class Main {
 
         options("/*", (req, res) -> "OK");
 
-        // ══════════════════════════════════════════════════════════════════════
         //  AUTH
-        // ══════════════════════════════════════════════════════════════════════
+
         post("/api/auth/cadastro", (req, res) -> {
             res.type("application/json");
             try {
@@ -202,9 +201,8 @@ public class Main {
             }
         });
 
-        // ══════════════════════════════════════════════════════════════════════
-        //  CÓDIGOS
-        // ══════════════════════════════════════════════════════════════════════
+        //  CODIGOS
+
         get("/api/codigos", (req, res) -> {
             res.type("application/json");
             try {
@@ -215,7 +213,7 @@ public class Main {
 
                 List<Codigo> codigos = codigoDao.listarCodigosPorUsuario(userId(req));
 
-                // Adiciona lista de IDs de grupos a cada código
+                // Adiciona lista de IDs de grupos a cada codigo
                 JsonArray arr = new JsonArray();
                 for (Codigo c : codigos) {
                     JsonElement el = gson.toJsonTree(c);
@@ -297,9 +295,8 @@ public class Main {
             }
         });
 
-        // ══════════════════════════════════════════════════════════════════════
-        //  GRUPOS
-        // ══════════════════════════════════════════════════════════════════════
+        // GRUPOS
+
         get("/api/grupos", (req, res) -> {
             res.type("application/json");
             try {
@@ -403,7 +400,8 @@ public class Main {
             }
         });
 
-        // Definir grupos de um código (recebe array JSON de IDs)
+        // Definir grupos de um codigo 
+
         post("/api/codigos/:id/grupos", (req, res) -> {
             res.type("application/json");
             try {
@@ -423,9 +421,8 @@ public class Main {
             }
         });
 
-        // ══════════════════════════════════════════════════════════════════════
-        //  EXERCÍCIOS
-        // ══════════════════════════════════════════════════════════════════════
+        //  EXERCICIOS
+
         get("/api/exercicios", (req, res) -> {
             res.type("application/json");
             try {

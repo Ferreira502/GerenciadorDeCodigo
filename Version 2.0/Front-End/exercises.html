@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/exercises.css">
 </head>
 <body>
 <div class="layout-app">
@@ -48,7 +49,7 @@
           <i class="fa-solid fa-magnifying-glass"></i>
           <input type="text" id="buscaExercicios" placeholder="Buscar exercícios..." oninput="renderizarExercicios()">
         </div>
-        <button class="btn botao-primario btn-sm" onclick="abrirNovoExercicio()"><i class="fa-solid fa-plus"></i> Novo</button>
+        <button class="btn btn-primario btn-sm" onclick="abrirNovoExercicio()"><i class="fa-solid fa-plus"></i> Novo</button>
         <div id="menuTopbar"></div>
       </div>
     </header>
@@ -56,10 +57,9 @@
     <div class="pagina">
       <div class="cabecalho-secao" style="margin-bottom:1.3rem">
         <div class="titulo-secao"><i class="fa-solid fa-dumbbell"></i> Exercícios</div>
-        <button class="btn botao-primario btn-sm" onclick="abrirNovoExercicio()"><i class="fa-solid fa-plus"></i> Novo Exercício</button>
+        <button class="btn btn-primario btn-sm" onclick="abrirNovoExercicio()"><i class="fa-solid fa-plus"></i> Novo Exercício</button>
       </div>
 
-      <!-- Filtros -->
       <div class="barra-filtros">
         <select class="filtro-select" id="filtroDificuldade" onchange="renderizarExercicios()">
           <option value="">Todas dificuldades</option>
@@ -150,7 +150,7 @@
       <label>Observações / Aprendizados</label>
       <textarea id="exObservacoes" placeholder="O que aprendeu com este exercício?" style="min-height:75px;font-family:'Space Grotesk',sans-serif;font-size:0.86rem"></textarea>
     </div>
-    <button class="btn botao-primario" style="width:100%" onclick="salvarExercicioForm()">
+    <button class="btn btn-primario" style="width:100%" onclick="salvarExercicioForm()">
       <i class="fa-solid fa-floppy-disk"></i> Salvar Exercício
     </button>
   </div>
@@ -166,15 +166,15 @@
         <div id="detalheTags" style="display:flex;gap:7px;flex-wrap:wrap;margin-top:9px"></div>
       </div>
       <div style="display:flex;gap:7px;align-items:flex-start">
-        <button class="btn botao-secundario btn-sm" onclick="editarExercicioDoDetalhe()"><i class="fa-solid fa-pen"></i></button>
+        <button class="btn btn-secundario btn-sm" onclick="editarExercicioDoDetalhe()"><i class="fa-solid fa-pen"></i></button>
         <button class="fechar-modal" onclick="fecharModal('modalDetalheExercicio')">×</button>
       </div>
     </div>
 
     <div class="abas-modal">
-      <button class="aba-modal ativa" onclick="trocarAba('enunciado',this)">📋 Enunciado</button>
-      <button class="aba-modal" onclick="trocarAba('solucao',this)">💡 Minha Solução</button>
-      <button class="aba-modal" onclick="trocarAba('observacoes',this)">📝 Observações</button>
+      <button class="aba-modal ativa" onclick="trocarAba('enunciado',this)">Enunciado</button>
+      <button class="aba-modal" onclick="trocarAba('solucao',this)">Minha Solução</button>
+      <button class="aba-modal" onclick="trocarAba('observacoes',this)">Observações</button>
     </div>
 
     <div class="conteudo-aba ativo" id="aba-enunciado">
@@ -185,7 +185,7 @@
 
     <div class="conteudo-aba" id="aba-solucao">
       <div style="display:flex;justify-content:flex-end;margin-bottom:0.7rem">
-        <button class="btn botao-secundario btn-sm" onclick="copiarSolucao()"><i class="fa-solid fa-copy"></i> Copiar</button>
+        <button class="btn btn-secundario btn-sm" onclick="copiarSolucao()"><i class="fa-solid fa-copy"></i> Copiar</button>
       </div>
       <div class="codigo-modal"><pre><code id="detalheSolucao">// Nenhuma solução adicionada ainda.</code></pre></div>
     </div>
