@@ -33,7 +33,6 @@ import static spark.Spark.put;
 
 public class Main {
 
-    // Adapter LocalDateTime
     private static class LocalDateTimeAdapter
             extends com.google.gson.TypeAdapter<LocalDateTime> {
 
@@ -58,7 +57,6 @@ public class Main {
         }
     }
 
-    // Helpers
     private static JsonObject erro(String msg) {
         JsonObject j = new JsonObject();
         j.addProperty("erro", msg);
@@ -79,15 +77,24 @@ public class Main {
         return req.cookie("userId") != null;
     }
 
-    // CORS helper 
-    private static boolean origemPermitida(String origin) {
-        if (origin == null) return false;
-        return origin.matches("https?://(localhost|127\\.0\\.0\\.1)(:\\d+)?")
-            || origin.matches("https://[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*\\.vercel\\.app")
-            || origin.matches("https://[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*\\.onrender\\.com");
+    // Pega só o primeiro valor caso venha duplicado: "https://x.vercel.app, https://x.vercel.app"
+    private static String origemLimpa(String origin) {
+        if (origin == null) {
+            return null;
+        }
+        return origin.split(",")[0].trim();
     }
 
-    // Main
+    private static boolean origemPermitida(String origin) {
+        String o = origemLimpa(origin);
+        if (o == null) {
+            return false;
+        }
+        return o.matches("https?://(localhost|127\\.0\\.0\\.1)(:\\d+)?")
+                || o.endsWith(".vercel.app")
+                || o.endsWith(".onrender.com");
+    }
+
     public static void main(String[] args) {
 
         Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
@@ -105,11 +112,10 @@ public class Main {
         port(porta);
         System.out.println("Servidor rodando na porta " + porta);
 
-        // CORS 
         before((req, res) -> {
             String origin = req.headers("Origin");
             if (origemPermitida(origin)) {
-                res.header("Access-Control-Allow-Origin", origin);
+                res.header("Access-Control-Allow-Origin", origemLimpa(origin));
             }
             res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
             res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, Cookie");
@@ -119,7 +125,7 @@ public class Main {
         options("/*", (req, res) -> {
             String origin = req.headers("Origin");
             if (origemPermitida(origin)) {
-                res.header("Access-Control-Allow-Origin", origin);
+                res.header("Access-Control-Allow-Origin", origemLimpa(origin));
             }
             res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
             res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, Cookie");
@@ -128,28 +134,22 @@ public class Main {
             return "OK";
         });
 
-        // AUTH 
-
+        // AUTH
         post("/api/auth/cadastro", (req, res) -> {
             res.type("application/json");
             try {
-                Type t = new TypeToken<Map<String, String>>() {}.getType();
+                Type t = new TypeToken<Map<String, String>>() {
+                }.getType();
                 Map<String, String> data = gson.fromJson(req.body(), t);
-
-                String nome = data.get("nome");
-                String email = data.get("email");
-                String senha = data.get("senha");
-
+                String nome = data.get("nome"), email = data.get("email"), senha = data.get("senha");
                 if (nome == null || email == null || senha == null) {
                     res.status(400);
                     return gson.toJson(erro("Campos obrigatórios faltando"));
                 }
-
                 if (usuarioDao.getUsuarioPorEmail(email) != null) {
                     res.status(409);
                     return gson.toJson(erro("Email já cadastrado"));
                 }
-
                 int id = usuarioDao.cadastrarUsuario(nome, email, senha);
                 if (id > 0) {
                     res.cookie("/", "userId", String.valueOf(id), 86400, false, false);
@@ -159,7 +159,6 @@ public class Main {
                 }
                 res.status(500);
                 return gson.toJson(erro("Erro ao criar usuário"));
-
             } catch (Exception e) {
                 res.status(500);
                 return gson.toJson(erro(e.getMessage()));
@@ -169,9 +168,9 @@ public class Main {
         post("/api/auth/login", (req, res) -> {
             res.type("application/json");
             try {
-                Type t = new TypeToken<Map<String, String>>() {}.getType();
+                Type t = new TypeToken<Map<String, String>>() {
+                }.getType();
                 Map<String, String> data = gson.fromJson(req.body(), t);
-
                 Usuario usuario = usuarioDao.loginUsuario(data.get("email"), data.get("senha"));
                 if (usuario != null) {
                     res.cookie("/", "userId", String.valueOf(usuario.getId()), 86400, false, false);
@@ -182,7 +181,6 @@ public class Main {
                 }
                 res.status(401);
                 return gson.toJson(erro("Email ou senha incorretos"));
-
             } catch (Exception e) {
                 res.status(500);
                 return gson.toJson(erro(e.getMessage()));
@@ -215,7 +213,6 @@ public class Main {
         });
 
         // CODIGOS
-
         get("/api/codigos", (req, res) -> {
             res.type("application/json");
             try {
@@ -223,9 +220,7 @@ public class Main {
                     res.status(401);
                     return gson.toJson(erro("Não autenticado"));
                 }
-
                 List<Codigo> codigos = codigoDao.listarCodigosPorUsuario(userId(req));
-
                 JsonArray arr = new JsonArray();
                 for (Codigo c : codigos) {
                     JsonElement el = gson.toJsonTree(c);
@@ -235,7 +230,6 @@ public class Main {
                     arr.add(el);
                 }
                 return gson.toJson(arr);
-
             } catch (Exception e) {
                 res.status(500);
                 return gson.toJson(erro(e.getMessage()));
@@ -250,19 +244,15 @@ public class Main {
                     return gson.toJson(erro("Não autenticado"));
                 }
                 int uid = userId(req);
-
                 JsonObject data = JsonParser.parseString(req.body()).getAsJsonObject();
                 String titulo = data.has("titulo") ? data.get("titulo").getAsString() : null;
                 String linguagem = data.has("linguagem") ? data.get("linguagem").getAsString() : null;
-                String descricao = data.has("descricao") && !data.get("descricao").isJsonNull()
-                        ? data.get("descricao").getAsString() : null;
+                String descricao = data.has("descricao") && !data.get("descricao").isJsonNull() ? data.get("descricao").getAsString() : null;
                 String codigo = data.has("codigo") ? data.get("codigo").getAsString() : null;
-
                 if (titulo == null || linguagem == null || codigo == null) {
                     res.status(400);
                     return gson.toJson(erro("Campos obrigatórios faltando"));
                 }
-
                 int id = codigoDao.cadastrarCodigo(titulo, linguagem, descricao, codigo, uid);
                 if (id > 0) {
                     if (data.has("grupos") && data.get("grupos").isJsonArray()) {
@@ -279,7 +269,6 @@ public class Main {
                 }
                 res.status(500);
                 return gson.toJson(erro("Erro ao salvar código"));
-
             } catch (Exception e) {
                 res.status(500);
                 return gson.toJson(erro(e.getMessage()));
@@ -293,9 +282,10 @@ public class Main {
                     res.status(401);
                     return gson.toJson(erro("Não autenticado"));
                 }
-                int cid = Integer.parseInt(req.params(":id"));
-                boolean ok = codigoDao.deletarCodigo(cid, userId(req));
-                if (ok) return gson.toJson(respostaOk());
+                boolean ok = codigoDao.deletarCodigo(Integer.parseInt(req.params(":id")), userId(req));
+                if (ok) {
+                    return gson.toJson(respostaOk());
+                }
                 res.status(404);
                 return gson.toJson(erro("Código não encontrado"));
             } catch (Exception e) {
@@ -305,7 +295,6 @@ public class Main {
         });
 
         // GRUPOS
-
         get("/api/grupos", (req, res) -> {
             res.type("application/json");
             try {
@@ -327,27 +316,25 @@ public class Main {
                     res.status(401);
                     return gson.toJson(erro("Não autenticado"));
                 }
-
-                Type t = new TypeToken<Map<String, String>>() {}.getType();
+                Type t = new TypeToken<Map<String, String>>() {
+                }.getType();
                 Map<String, String> data = gson.fromJson(req.body(), t);
-
                 String nome = data.get("nome");
                 if (nome == null || nome.isBlank()) {
                     res.status(400);
                     return gson.toJson(erro("Nome do grupo é obrigatório"));
                 }
-
                 Grupo g = new Grupo();
                 g.setNome(nome);
                 g.setDescricao(data.get("descricao"));
                 g.setCor(data.getOrDefault("cor", "#00d9ff"));
                 g.setUsuarioId(userId(req));
-
                 int id = grupoDao.cadastrar(g);
-                if (id > 0) return gson.toJson(grupoDao.getPorId(id));
+                if (id > 0) {
+                    return gson.toJson(grupoDao.getPorId(id));
+                }
                 res.status(500);
                 return gson.toJson(erro("Erro ao criar grupo"));
-
             } catch (Exception e) {
                 res.status(500);
                 return gson.toJson(erro(e.getMessage()));
@@ -361,22 +348,21 @@ public class Main {
                     res.status(401);
                     return gson.toJson(erro("Não autenticado"));
                 }
-
-                Type t = new TypeToken<Map<String, String>>() {}.getType();
+                Type t = new TypeToken<Map<String, String>>() {
+                }.getType();
                 Map<String, String> data = gson.fromJson(req.body(), t);
-
                 Grupo g = new Grupo();
                 g.setId(Integer.parseInt(req.params(":id")));
                 g.setNome(data.get("nome"));
                 g.setDescricao(data.get("descricao"));
                 g.setCor(data.getOrDefault("cor", "#00d9ff"));
                 g.setUsuarioId(userId(req));
-
                 boolean ok = grupoDao.atualizar(g);
-                if (ok) return gson.toJson(grupoDao.getPorId(g.getId()));
+                if (ok) {
+                    return gson.toJson(grupoDao.getPorId(g.getId()));
+                }
                 res.status(404);
                 return gson.toJson(erro("Grupo não encontrado"));
-
             } catch (Exception e) {
                 res.status(500);
                 return gson.toJson(erro(e.getMessage()));
@@ -390,9 +376,10 @@ public class Main {
                     res.status(401);
                     return gson.toJson(erro("Não autenticado"));
                 }
-                int gid = Integer.parseInt(req.params(":id"));
-                boolean ok = grupoDao.deletar(gid, userId(req));
-                if (ok) return gson.toJson(respostaOk());
+                boolean ok = grupoDao.deletar(Integer.parseInt(req.params(":id")), userId(req));
+                if (ok) {
+                    return gson.toJson(respostaOk());
+                }
                 res.status(404);
                 return gson.toJson(erro("Grupo não encontrado"));
             } catch (Exception e) {
@@ -421,7 +408,6 @@ public class Main {
         });
 
         // EXERCICIOS
-
         get("/api/exercicios", (req, res) -> {
             res.type("application/json");
             try {
@@ -443,16 +429,14 @@ public class Main {
                     res.status(401);
                     return gson.toJson(erro("Não autenticado"));
                 }
-
-                Type t = new TypeToken<Map<String, String>>() {}.getType();
+                Type t = new TypeToken<Map<String, String>>() {
+                }.getType();
                 Map<String, String> data = gson.fromJson(req.body(), t);
-
                 String titulo = data.get("titulo");
                 if (titulo == null || titulo.isBlank()) {
                     res.status(400);
                     return gson.toJson(erro("Título é obrigatório"));
                 }
-
                 Exercicio ex = new Exercicio();
                 ex.setNumero(data.get("numero"));
                 ex.setTitulo(titulo);
@@ -465,12 +449,12 @@ public class Main {
                 ex.setSolucao(data.get("solucao"));
                 ex.setObservacoes(data.get("observacoes"));
                 ex.setUsuarioId(userId(req));
-
                 int id = exercicioDao.cadastrar(ex);
-                if (id > 0) return gson.toJson(exercicioDao.getPorId(id));
+                if (id > 0) {
+                    return gson.toJson(exercicioDao.getPorId(id));
+                }
                 res.status(500);
                 return gson.toJson(erro("Erro ao salvar exercício"));
-
             } catch (Exception e) {
                 res.status(500);
                 return gson.toJson(erro(e.getMessage()));
@@ -484,10 +468,9 @@ public class Main {
                     res.status(401);
                     return gson.toJson(erro("Não autenticado"));
                 }
-
-                Type t = new TypeToken<Map<String, String>>() {}.getType();
+                Type t = new TypeToken<Map<String, String>>() {
+                }.getType();
                 Map<String, String> data = gson.fromJson(req.body(), t);
-
                 Exercicio ex = new Exercicio();
                 ex.setId(Integer.parseInt(req.params(":id")));
                 ex.setNumero(data.get("numero"));
@@ -501,12 +484,12 @@ public class Main {
                 ex.setSolucao(data.get("solucao"));
                 ex.setObservacoes(data.get("observacoes"));
                 ex.setUsuarioId(userId(req));
-
                 boolean ok = exercicioDao.atualizar(ex);
-                if (ok) return gson.toJson(exercicioDao.getPorId(ex.getId()));
+                if (ok) {
+                    return gson.toJson(exercicioDao.getPorId(ex.getId()));
+                }
                 res.status(404);
                 return gson.toJson(erro("Exercício não encontrado"));
-
             } catch (Exception e) {
                 res.status(500);
                 return gson.toJson(erro(e.getMessage()));
@@ -520,9 +503,10 @@ public class Main {
                     res.status(401);
                     return gson.toJson(erro("Não autenticado"));
                 }
-                int eid = Integer.parseInt(req.params(":id"));
-                boolean ok = exercicioDao.deletar(eid, userId(req));
-                if (ok) return gson.toJson(respostaOk());
+                boolean ok = exercicioDao.deletar(Integer.parseInt(req.params(":id")), userId(req));
+                if (ok) {
+                    return gson.toJson(respostaOk());
+                }
                 res.status(404);
                 return gson.toJson(erro("Exercício não encontrado"));
             } catch (Exception e) {
