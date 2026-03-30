@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArmazenaCódigo — Exercícios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="layout-app">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-marca">
+        <div class="logo-icone">&lt;/&gt;</div>
+        <div><div class="logo-texto">ArmazenaCódigo</div><div class="logo-sub">v2.0 — snippet hub</div></div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <span class="nav-rotulo">Principal</span>
+      <a class="nav-item" href="index.html"><i class="fa-solid fa-house"></i> Início</a>
+      <a class="nav-item" href="manager.html"><i class="fa-solid fa-code"></i> Meus Códigos</a>
+      <a class="nav-item" href="groups.html"><i class="fa-solid fa-layer-group"></i> Grupos</a>
+      <a class="nav-item ativo" href="exercises.html"><i class="fa-solid fa-dumbbell"></i> Exercícios <span class="nav-badge" id="badgeExercicios">0</span></a>
+      <span class="nav-rotulo">Ações</span>
+      <a class="nav-item" href="manager.html"><i class="fa-solid fa-plus"></i> Novo Código</a>
+      <a class="nav-item" href="#" onclick="abrirNovoExercicio()"><i class="fa-solid fa-file-code"></i> Novo Exercício</a>
+      <a class="nav-item" href="groups.html#novo"><i class="fa-solid fa-folder-plus"></i> Novo Grupo</a>
+    </nav>
+    <div class="sidebar-rodape">
+      <div class="cartao-usuario" id="cartaoUsuario" style="display:none">
+        <div class="avatar-usuario" id="avatarSidebar">G</div>
+        <div class="info-usuario">
+          <div class="nome-usuario" id="nomeSidebar">—</div>
+          <div class="email-usuario" id="emailSidebar">—</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="principal">
+    <header class="topbar">
+      <span class="topbar-titulo">Exercícios</span>
+      <div class="topbar-acoes">
+        <div class="barra-busca">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="buscaExercicios" placeholder="Buscar exercícios..." oninput="renderizarExercicios()">
+        </div>
+        <button class="btn botao-primario btn-sm" onclick="abrirNovoExercicio()"><i class="fa-solid fa-plus"></i> Novo</button>
+        <div id="menuTopbar"></div>
+      </div>
+    </header>
+
+    <div class="pagina">
+      <div class="cabecalho-secao" style="margin-bottom:1.3rem">
+        <div class="titulo-secao"><i class="fa-solid fa-dumbbell"></i> Exercícios</div>
+        <button class="btn botao-primario btn-sm" onclick="abrirNovoExercicio()"><i class="fa-solid fa-plus"></i> Novo Exercício</button>
+      </div>
+
+      <!-- Filtros -->
+      <div class="barra-filtros">
+        <select class="filtro-select" id="filtroDificuldade" onchange="renderizarExercicios()">
+          <option value="">Todas dificuldades</option>
+          <option value="Fácil">Fácil</option>
+          <option value="Médio">Médio</option>
+          <option value="Difícil">Difícil</option>
+        </select>
+        <select class="filtro-select" id="filtroStatus" onchange="renderizarExercicios()">
+          <option value="">Todos status</option>
+          <option value="resolvido">Resolvidos</option>
+          <option value="pendente">Não resolvidos</option>
+        </select>
+        <select class="filtro-select" id="filtroLinguagem" onchange="renderizarExercicios()">
+          <option value="">Todas linguagens</option>
+        </select>
+      </div>
+
+      <div class="grade-exercicios" id="gradeExercicios">
+        <div class="estado-vazio" style="grid-column:1/-1"><p>Carregando...</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: criar/editar exercício -->
+<div class="modal" id="modalFormExercicio">
+  <div class="conteudo-modal" style="max-width:700px">
+    <div class="cabecalho-modal">
+      <h2 id="tituloModalEx" style="color:var(--ciano)">Adicionar Exercício</h2>
+      <button class="fechar-modal" onclick="fecharModal('modalFormExercicio')">×</button>
+    </div>
+    <input type="hidden" id="exId">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+      <div class="grupo-campo">
+        <label>Número / ID</label>
+        <input type="text" id="exNumero" placeholder="Ex: 1001">
+      </div>
+      <div class="grupo-campo">
+        <label>Dificuldade</label>
+        <select id="exDificuldade">
+          <option value="Fácil">Fácil</option>
+          <option value="Médio">Médio</option>
+          <option value="Difícil">Difícil</option>
+        </select>
+      </div>
+    </div>
+    <div class="grupo-campo">
+      <label>Título *</label>
+      <input type="text" id="exTitulo" placeholder="Ex: Soma de N números">
+    </div>
+    <div class="grupo-campo">
+      <label>Enunciado</label>
+      <textarea id="exEnunciado" placeholder="Descreva o problema..." style="min-height:90px;font-family:'Space Grotesk',sans-serif"></textarea>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+      <div class="grupo-campo">
+        <label>Entrada de Exemplo</label>
+        <textarea id="exEntrada" placeholder="Exemplo de input..." style="min-height:75px"></textarea>
+      </div>
+      <div class="grupo-campo">
+        <label>Saída Esperada</label>
+        <textarea id="exSaida" placeholder="Saída esperada..." style="min-height:75px"></textarea>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+      <div class="grupo-campo">
+        <label>Linguagem da Solução</label>
+        <select id="exLinguagem">
+          <option value="">Sem solução ainda</option>
+          <option>JavaScript</option><option>TypeScript</option><option>Python</option>
+          <option>Java</option><option>C++</option><option>C#</option><option>PHP</option>
+          <option>Ruby</option><option>Go</option><option>Rust</option><option>SQL</option><option>Outro</option>
+        </select>
+      </div>
+      <div class="grupo-campo">
+        <label>Status</label>
+        <select id="exStatus">
+          <option value="pendente">Não resolvido</option>
+          <option value="resolvido">Resolvido ✓</option>
+        </select>
+      </div>
+    </div>
+    <div class="grupo-campo">
+      <label>Minha Solução</label>
+      <textarea id="exSolucao" placeholder="// Cole sua solução aqui..." style="min-height:160px"></textarea>
+    </div>
+    <div class="grupo-campo">
+      <label>Observações / Aprendizados</label>
+      <textarea id="exObservacoes" placeholder="O que aprendeu com este exercício?" style="min-height:75px;font-family:'Space Grotesk',sans-serif;font-size:0.86rem"></textarea>
+    </div>
+    <button class="btn botao-primario" style="width:100%" onclick="salvarExercicioForm()">
+      <i class="fa-solid fa-floppy-disk"></i> Salvar Exercício
+    </button>
+  </div>
+</div>
+
+<!-- Modal: detalhe do exercício -->
+<div class="modal" id="modalDetalheExercicio">
+  <div class="conteudo-modal" style="max-width:700px">
+    <div class="cabecalho-modal">
+      <div style="flex:1">
+        <div id="detalheNumero" style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--texto3);margin-bottom:5px"></div>
+        <h2 id="detalheTitulo" style="color:var(--ciano)"></h2>
+        <div id="detalheTags" style="display:flex;gap:7px;flex-wrap:wrap;margin-top:9px"></div>
+      </div>
+      <div style="display:flex;gap:7px;align-items:flex-start">
+        <button class="btn botao-secundario btn-sm" onclick="editarExercicioDoDetalhe()"><i class="fa-solid fa-pen"></i></button>
+        <button class="fechar-modal" onclick="fecharModal('modalDetalheExercicio')">×</button>
+      </div>
+    </div>
+
+    <div class="abas-modal">
+      <button class="aba-modal ativa" onclick="trocarAba('enunciado',this)">📋 Enunciado</button>
+      <button class="aba-modal" onclick="trocarAba('solucao',this)">💡 Minha Solução</button>
+      <button class="aba-modal" onclick="trocarAba('observacoes',this)">📝 Observações</button>
+    </div>
+
+    <div class="conteudo-aba ativo" id="aba-enunciado">
+      <div class="secao-enunciado"><h4>Descrição</h4><p id="detalheEnunciado">—</p></div>
+      <div class="secao-enunciado" id="secaoEntrada"><h4>Entrada</h4><div class="bloco-io-modal" id="detalheEntrada"></div></div>
+      <div class="secao-enunciado" id="secaoSaida"><h4>Saída</h4><div class="bloco-io-modal" id="detalheSaida"></div></div>
+    </div>
+
+    <div class="conteudo-aba" id="aba-solucao">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:0.7rem">
+        <button class="btn botao-secundario btn-sm" onclick="copiarSolucao()"><i class="fa-solid fa-copy"></i> Copiar</button>
+      </div>
+      <div class="codigo-modal"><pre><code id="detalheSolucao">// Nenhuma solução adicionada ainda.</code></pre></div>
+    </div>
+
+    <div class="conteudo-aba" id="aba-observacoes">
+      <div class="secao-enunciado"><h4>Observações / Aprendizados</h4><p id="detalheObservacoes" style="white-space:pre-wrap">—</p></div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/exercises.js"></script>
+</body>
+</html>

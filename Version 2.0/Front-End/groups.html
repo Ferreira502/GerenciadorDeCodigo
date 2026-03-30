@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArmazenaCódigo — Grupos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="layout-app">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icone">&lt;/&gt;</div>
+      <div>
+        <div class="logo-texto">ArmazenaCódigo</div>
+        <div class="logo-sub">v2.0 — snippet hub</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <span class="nav-rotulo">Principal</span>
+      <a class="nav-item" href="index.html"><i class="fa-solid fa-house"></i> Início</a>
+      <a class="nav-item" href="manager.html"><i class="fa-solid fa-code"></i> Meus Códigos</a>
+      <a class="nav-item ativo" href="groups.html"><i class="fa-solid fa-layer-group"></i> Grupos <span class="nav-badge" id="badgeGrupos">0</span></a>
+      <a class="nav-item" href="categories.html"><i class="fa-solid fa-folder"></i> Categorias</a>
+      <span class="nav-rotulo">Ações</span>
+      <a class="nav-item" href="manager.html"><i class="fa-solid fa-plus"></i> Novo Código</a>
+      <a class="nav-item" href="#" onclick="abrirModal()"><i class="fa-solid fa-folder-plus"></i> Novo Grupo</a>
+    </nav>
+    <div class="sidebar-rodape">
+      <div class="cartao-usuario" id="cartaoUsuario" style="display:none">
+        <div class="avatar-usuario" id="avatarSidebar">G</div>
+        <div class="info-usuario">
+          <div class="nome-usuario"  id="nomeSidebar">—</div>
+          <div class="email-usuario" id="emailSidebar">—</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="principal">
+    <header class="topbar">
+      <span class="topbar-titulo">Grupos</span>
+      <div class="topbar-acoes">
+        <button class="btn btn-primario btn-sm" onclick="abrirModal()"><i class="fa-solid fa-plus"></i> Novo Grupo</button>
+        <div id="menuTopbar"></div>
+      </div>
+    </header>
+
+    <div class="pagina">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.3rem">
+        <div class="titulo-secao"><i class="fa-solid fa-layer-group"></i> Grupos de Códigos</div>
+        <button class="btn btn-primario btn-sm" onclick="abrirModal()"><i class="fa-solid fa-plus"></i> Novo Grupo</button>
+      </div>
+
+      <div class="grade-grupos" id="gradeGrupos">
+        <div class="estado-vazio" style="grid-column:1/-1">
+          <p>Carregando...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal criar / editar grupo -->
+<div class="modal" id="modal">
+  <div class="conteudo-modal" style="max-width:460px">
+    <div class="cabecalho-modal">
+      <h2 id="modalTitulo" style="color:#00d9ff">Criar Grupo</h2>
+      <button class="fechar-modal" onclick="fecharModal()">×</button>
+    </div>
+
+    <input type="hidden" id="editId">
+
+    <div class="grupo-campo">
+      <label>Nome *</label>
+      <input type="text" id="nome" placeholder="Ex: Algoritmos, Projeto X...">
+    </div>
+
+    <div class="grupo-campo">
+      <label>Descrição</label>
+      <input type="text" id="descricao" placeholder="Descrição breve...">
+    </div>
+
+    <div class="grupo-campo">
+      <label>Cor</label>
+      <div class="seletor-cores" id="seletorCores"></div>
+    </div>
+
+    <button class="btn btn-primario" style="width:100%;margin-top:0.5rem" onclick="salvar()">
+      <i class="fa-solid fa-floppy-disk"></i> Salvar
+    </button>
+  </div>
+</div>
+
+<script src="assets/js/api.js"></script>
+<script>
+const CORES = ['#00d9ff','#00ffc8','#9d6af5','#ffd166','#ff4d6d','#ff8c42','#60b4ff','#f77fff'];
+
+let grupos  = [];
+let codigos = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
+  await injectUserMenu();
+  [grupos, codigos] = await Promise.all([listarGrupos(), listarCodigos()]);
+  renderizar();
+  document.getElementById('badgeGrupos').textContent = grupos.length;
+  document.getElementById('modal').addEventListener('click', e => { if (e.target.id === 'modal') fecharModal(); });
+});
+
+// ── Modal ──────────────────────────────────────────────────────────
+function abrirModal(g = null) {
+  document.getElementById('editId').value      = g ? g.id : '';
+  document.getElementById('nome').value        = g ? g.nome : '';
+  document.getElementById('descricao').value   = g ? (g.descricao || '') : '';
+  document.getElementById('modalTitulo').textContent = g ? 'Editar Grupo' : 'Criar Grupo';
+  renderCores(g ? g.cor : CORES[0]);
+  document.getElementById('modal').classList.add('active');
+}
+
+function fecharModal() { document.getElementById('modal').classList.remove('active'); }
+
+function renderCores(sel) {
+  document.getElementById('seletorCores').innerHTML = CORES.map(c =>
+    `<div class="cor-swatch${c===sel?' selecionada':''}" style="background:${c}"
+          onclick="document.querySelectorAll('.cor-swatch').forEach(s=>s.classList.remove('selecionada'));this.classList.add('selecionada')"></div>`
+  ).join('');
+}
+
+function getCorSel() {
+  const s = document.querySelector('.cor-swatch.selecionada');
+  return s ? s.style.background : CORES[0];
+}
+
+// ── CRUD ───────────────────────────────────────────────────────────
+async function salvar() {
+  const nome    = document.getElementById('nome').value.trim();
+  const desc    = document.getElementById('descricao').value.trim();
+  const cor     = getCorSel();
+  const editId  = document.getElementById('editId').value;
+
+  if (!nome) { showToast('Nome é obrigatório.', 'error'); return; }
+
+  let ok, data;
+  if (editId) {
+    ({ ok, data } = await atualizarGrupo(parseInt(editId), nome, desc, cor));
+  } else {
+    ({ ok, data } = await criarGrupo(nome, desc, cor));
+  }
+
+  if (!ok) { showToast(data.erro || 'Erro ao salvar.', 'error'); return; }
+
+  if (editId) {
+    grupos = grupos.map(g => g.id === parseInt(editId) ? { ...g, nome, descricao: desc, cor } : g);
+    showToast('Grupo atualizado!');
+  } else {
+    grupos.unshift(data);
+    showToast('Grupo criado!');
+  }
+
+  fecharModal();
+  renderizar();
+  document.getElementById('badgeGrupos').textContent = grupos.length;
+}
+
+async function excluir(id) {
+  if (!confirm('Remover este grupo? Os códigos não serão apagados.')) return;
+  const ok = await deletarGrupo(id);
+  if (!ok) { showToast('Erro ao excluir.', 'error'); return; }
+  grupos = grupos.filter(g => g.id !== id);
+  renderizar();
+  document.getElementById('badgeGrupos').textContent = grupos.length;
+  showToast('Grupo removido.');
+}
+
+// ── Renderizar ─────────────────────────────────────────────────────
+function renderizar() {
+  const el = document.getElementById('gradeGrupos');
+
+  if (!grupos.length) {
+    el.innerHTML = `
+      <div class="estado-vazio" style="grid-column:1/-1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+        </svg>
+        <p>Nenhum grupo ainda.<br>Clique em "+ Novo Grupo" para começar!</p>
+      </div>`;
+    return;
+  }
+
+  el.innerHTML = grupos.map(g => {
+    const qtd = codigos.filter(c => (c.grupos || []).includes(g.id)).length;
+    return `
+    <div class="cartao-grupo">
+      <div class="grupo-cabecalho">
+        <div class="grupo-ponto" style="background:${g.cor}"></div>
+        <span class="grupo-nome">${escapeHtml(g.nome)}</span>
+        <div class="grupo-acoes">
+          <button class="btn-icone" onclick="abrirModal(${JSON.stringify(g).replace(/"/g,'&quot;')})" title="Editar">
+            <i class="fa-solid fa-pen"></i>
+          </button>
+          <button class="btn-icone perigo" onclick="excluir(${g.id})" title="Excluir">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </div>
+      <div class="grupo-corpo">
+        ${g.descricao ? `<div class="grupo-desc">${escapeHtml(g.descricao)}</div>` : ''}
+        <div class="grupo-info">${qtd} ${qtd === 1 ? 'código' : 'códigos'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+</script>
+</body>
+</html>

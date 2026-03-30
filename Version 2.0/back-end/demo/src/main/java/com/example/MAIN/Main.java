@@ -2,16 +2,24 @@ package com.example.MAIN;
 
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.example.CODIGO.Codigo;
 import com.example.DAO.CodigoDAO;
+import com.example.DAO.ExercicioDAO;
+import com.example.DAO.GrupoDAO;
 import com.example.DAO.UsuarioDAO;
+import com.example.EXERCICIO.Exercicio;
+import com.example.GRUPO.Grupo;
 import com.example.USUARIO.Usuario;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
 import io.github.cdimascio.dotenv.Dotenv;
@@ -21,22 +29,27 @@ import static spark.Spark.get;
 import static spark.Spark.options;
 import static spark.Spark.port;
 import static spark.Spark.post;
+import static spark.Spark.put;
 
 public class Main {
 
-    private static class LocalDateTimeAdapter extends com.google.gson.TypeAdapter<LocalDateTime> {
+    // ── Adapter LocalDateTime ─────────────────────────────────────────────────
+    private static class LocalDateTimeAdapter
+            extends com.google.gson.TypeAdapter<LocalDateTime> {
 
         @Override
-        public void write(com.google.gson.stream.JsonWriter out, LocalDateTime value) throws java.io.IOException {
+        public void write(com.google.gson.stream.JsonWriter out, LocalDateTime value)
+                throws java.io.IOException {
             if (value == null) {
-                out.nullValue();
-            } else {
+                out.nullValue(); 
+            }else {
                 out.value(value.toString());
             }
         }
 
         @Override
-        public LocalDateTime read(com.google.gson.stream.JsonReader in) throws java.io.IOException {
+        public LocalDateTime read(com.google.gson.stream.JsonReader in)
+                throws java.io.IOException {
             if (in.peek() == com.google.gson.stream.JsonToken.NULL) {
                 in.nextNull();
                 return null;
@@ -45,31 +58,52 @@ public class Main {
         }
     }
 
-    public static void main(String[] args) {
-        Dotenv dotenv = Dotenv.configure()
-                .ignoreIfMissing()
-                .load();
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    private static JsonObject erro(String msg) {
+        JsonObject j = new JsonObject();
+        j.addProperty("erro", msg);
+        return j;
+    }
 
+    // Renomeado para respostaOk() — evita conflito com variável local "boolean ok"
+    private static JsonObject respostaOk() {
+        JsonObject j = new JsonObject();
+        j.addProperty("status", "ok");
+        return j;
+    }
+
+    private static int userId(spark.Request req) {
+        return Integer.parseInt(req.cookie("userId"));
+    }
+
+    private static boolean autenticado(spark.Request req) {
+        return req.cookie("userId") != null;
+    }
+
+    // ── Main ──────────────────────────────────────────────────────────────────
+    public static void main(String[] args) {
+
+        Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
         int porta = Integer.parseInt(dotenv.get("PORT", "8080"));
 
         CodigoDAO codigoDao = new CodigoDAO();
         UsuarioDAO usuarioDao = new UsuarioDAO();
+        ExercicioDAO exercicioDao = new ExercicioDAO();
+        GrupoDAO grupoDao = new GrupoDAO();
 
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .create();
 
         port(porta);
-
         System.out.println("Servidor rodando na porta " + porta);
 
-        // CORS
+        // ── CORS ──────────────────────────────────────────────────────────────
         before((req, res) -> {
             String origin = req.headers("Origin");
-            if (origin != null && (origin.contains("localhost") ||
-                    origin.contains("127.0.0.1") ||
-                    origin.contains("vercel.app")
-            )) {
+            if (origin != null && (origin.contains("localhost")
+                    || origin.contains("127.0.0.1")
+                    || origin.contains("vercel.app"))) {
                 res.header("Access-Control-Allow-Origin", origin);
             }
             res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
@@ -79,14 +113,15 @@ public class Main {
 
         options("/*", (req, res) -> "OK");
 
-        // Cadastro
+        // ══════════════════════════════════════════════════════════════════════
+        //  AUTH
+        // ══════════════════════════════════════════════════════════════════════
         post("/api/auth/cadastro", (req, res) -> {
-            System.out.println("Recebendo requisição de cadastro...");
             res.type("application/json");
             try {
-                Type mapType = new TypeToken<Map<String, String>>() {
+                Type t = new TypeToken<Map<String, String>>() {
                 }.getType();
-                Map<String, String> data = gson.fromJson(req.body(), mapType);
+                Map<String, String> data = gson.fromJson(req.body(), t);
 
                 String nome = data.get("nome");
                 String email = data.get("email");
@@ -94,225 +129,417 @@ public class Main {
 
                 if (nome == null || email == null || senha == null) {
                     res.status(400);
-                    JsonObject erro = new JsonObject();
-                    erro.addProperty("erro", "Campos obrigatórios faltando");
-                    return gson.toJson(erro);
+                    return gson.toJson(erro("Campos obrigatórios faltando"));
                 }
 
-                Usuario existente = usuarioDao.getUsuarioPorEmail(email);
-                if (existente != null) {
+                if (usuarioDao.getUsuarioPorEmail(email) != null) {
                     res.status(409);
-                    JsonObject erro = new JsonObject();
-                    erro.addProperty("erro", "Email já cadastrado");
-                    return gson.toJson(erro);
+                    return gson.toJson(erro("Email já cadastrado"));
                 }
 
                 int id = usuarioDao.cadastrarUsuario(nome, email, senha);
-
                 if (id > 0) {
-                    Usuario usuario = new Usuario(id, nome, email, null);
                     res.cookie("/", "userId", String.valueOf(id), 86400, false, false);
-
-                    JsonObject resposta = new JsonObject();
-                    resposta.addProperty("status", "ok");
-                    resposta.add("usuario", gson.toJsonTree(usuario));
-                    return gson.toJson(resposta);
-                } else {
-                    res.status(500);
-                    JsonObject erro = new JsonObject();
-                    erro.addProperty("erro", "Erro ao criar usuário");
-                    return gson.toJson(erro);
+                    JsonObject r = respostaOk();
+                    r.add("usuario", gson.toJsonTree(new Usuario(id, nome, email, null)));
+                    return gson.toJson(r);
                 }
+                res.status(500);
+                return gson.toJson(erro("Erro ao criar usuário"));
 
             } catch (Exception e) {
                 res.status(500);
-                JsonObject erro = new JsonObject();
-                erro.addProperty("erro", e.getMessage());
-                return gson.toJson(erro);
+                return gson.toJson(erro(e.getMessage()));
             }
         });
 
-        // Login
         post("/api/auth/login", (req, res) -> {
             res.type("application/json");
             try {
-                Type mapType = new TypeToken<Map<String, String>>() {
+                Type t = new TypeToken<Map<String, String>>() {
                 }.getType();
-                Map<String, String> data = gson.fromJson(req.body(), mapType);
+                Map<String, String> data = gson.fromJson(req.body(), t);
 
-                String email = data.get("email");
-                String senha = data.get("senha");
-
-                Usuario usuario = usuarioDao.loginUsuario(email, senha);
-
+                Usuario usuario = usuarioDao.loginUsuario(data.get("email"), data.get("senha"));
                 if (usuario != null) {
-                    // FIX: cookie com path "/" e maxAge de 1 dia (86400s)
                     res.cookie("/", "userId", String.valueOf(usuario.getId()), 86400, false, false);
-
                     usuario.setSenha(null);
-                    JsonObject resposta = new JsonObject();
-                    resposta.addProperty("status", "ok");
-                    resposta.add("usuario", gson.toJsonTree(usuario));
-                    return gson.toJson(resposta);
-                } else {
-                    res.status(401);
-                    JsonObject erro = new JsonObject();
-                    erro.addProperty("erro", "Email ou senha incorretos");
-                    return gson.toJson(erro);
+                    JsonObject r = respostaOk();
+                    r.add("usuario", gson.toJsonTree(usuario));
+                    return gson.toJson(r);
                 }
+                res.status(401);
+                return gson.toJson(erro("Email ou senha incorretos"));
 
             } catch (Exception e) {
                 res.status(500);
-                JsonObject erro = new JsonObject();
-                erro.addProperty("erro", e.getMessage());
-                return gson.toJson(erro);
+                return gson.toJson(erro(e.getMessage()));
             }
         });
 
-        // Logout
         post("/api/auth/logout", (req, res) -> {
             res.removeCookie("/", "userId");
-            JsonObject resposta = new JsonObject();
-            resposta.addProperty("status", "ok");
-            return gson.toJson(resposta);
+            return gson.toJson(respostaOk());
         });
 
-        // Usuario logado
         get("/api/auth/me", (req, res) -> {
             res.type("application/json");
             try {
-                String userIdCookie = req.cookie("userId");
-                if (userIdCookie == null) {
+                if (!autenticado(req)) {
                     res.status(401);
                     return "{}";
                 }
-
-                int userId = Integer.parseInt(userIdCookie);
-                Usuario usuario = usuarioDao.getUsuarioPorId(userId);
-
-                if (usuario != null) {
-                    usuario.setSenha(null);
-                    return gson.toJson(usuario);
-                } else {
-                    res.status(401);
-                    return "{}";
+                Usuario u = usuarioDao.getUsuarioPorId(userId(req));
+                if (u != null) {
+                    u.setSenha(null);
+                    return gson.toJson(u);
                 }
-
+                res.status(401);
+                return "{}";
             } catch (Exception e) {
                 res.status(500);
-                JsonObject erro = new JsonObject();
-                erro.addProperty("erro", e.getMessage());
-                return gson.toJson(erro);
+                return gson.toJson(erro(e.getMessage()));
             }
         });
 
-        // Listar codigos do usuario logado
+        // ══════════════════════════════════════════════════════════════════════
+        //  CÓDIGOS
+        // ══════════════════════════════════════════════════════════════════════
         get("/api/codigos", (req, res) -> {
             res.type("application/json");
             try {
-                String userIdCookie = req.cookie("userId");
-                if (userIdCookie == null) {
+                if (!autenticado(req)) {
                     res.status(401);
-                    JsonObject erro = new JsonObject();
-                    erro.addProperty("erro", "Não autenticado");
-                    return gson.toJson(erro);
+                    return gson.toJson(erro("Não autenticado"));
                 }
 
-                int userId = Integer.parseInt(userIdCookie);
-                List<Codigo> codigos = codigoDao.listarCodigosPorUsuario(userId);
-                return gson.toJson(codigos);
+                List<Codigo> codigos = codigoDao.listarCodigosPorUsuario(userId(req));
+
+                // Adiciona lista de IDs de grupos a cada código
+                JsonArray arr = new JsonArray();
+                for (Codigo c : codigos) {
+                    JsonElement el = gson.toJsonTree(c);
+                    JsonArray grupos = new JsonArray();
+                    grupoDao.listarGruposDoCodigo(c.getId()).forEach(grupos::add);
+                    el.getAsJsonObject().add("grupos", grupos);
+                    arr.add(el);
+                }
+                return gson.toJson(arr);
 
             } catch (Exception e) {
                 res.status(500);
-                JsonObject erro = new JsonObject();
-                erro.addProperty("erro", e.getMessage());
-                return gson.toJson(erro);
+                return gson.toJson(erro(e.getMessage()));
             }
         });
 
-        // Criar codigo
         post("/api/codigos", (req, res) -> {
             res.type("application/json");
             try {
-                String userIdCookie = req.cookie("userId");
-                if (userIdCookie == null) {
+                if (!autenticado(req)) {
                     res.status(401);
-                    JsonObject erro = new JsonObject();
-                    erro.addProperty("erro", "Não autenticado");
-                    return gson.toJson(erro);
+                    return gson.toJson(erro("Não autenticado"));
                 }
+                int uid = userId(req);
 
-                int userId = Integer.parseInt(userIdCookie);
-
-                Type mapType = new TypeToken<Map<String, String>>() {
-                }.getType();
-                Map<String, String> data = gson.fromJson(req.body(), mapType);
-
-                String titulo = data.get("titulo");
-                String linguagem = data.get("linguagem");
-                String descricao = data.get("descricao");
-                String codigo = data.get("codigo");
+                JsonObject data = JsonParser.parseString(req.body()).getAsJsonObject();
+                String titulo = data.has("titulo") ? data.get("titulo").getAsString() : null;
+                String linguagem = data.has("linguagem") ? data.get("linguagem").getAsString() : null;
+                String descricao = data.has("descricao") && !data.get("descricao").isJsonNull()
+                        ? data.get("descricao").getAsString() : null;
+                String codigo = data.has("codigo") ? data.get("codigo").getAsString() : null;
 
                 if (titulo == null || linguagem == null || codigo == null) {
                     res.status(400);
-                    JsonObject erro = new JsonObject();
-                    erro.addProperty("erro", "Campos obrigatórios faltando");
-                    return gson.toJson(erro);
+                    return gson.toJson(erro("Campos obrigatórios faltando"));
                 }
 
-                int id = codigoDao.cadastrarCodigo(titulo, linguagem, descricao, codigo, userId);
-
+                int id = codigoDao.cadastrarCodigo(titulo, linguagem, descricao, codigo, uid);
                 if (id > 0) {
-                    Codigo novoCodigo = codigoDao.getCodigoPorId(id);
-                    return gson.toJson(novoCodigo);
-                } else {
-                    res.status(500);
-                    JsonObject erro = new JsonObject();
-                    erro.addProperty("erro", "Erro ao salvar código");
-                    return gson.toJson(erro);
+                    // Associar grupos se enviados
+                    if (data.has("grupos") && data.get("grupos").isJsonArray()) {
+                        List<Integer> gids = new ArrayList<>();
+                        data.get("grupos").getAsJsonArray().forEach(g -> gids.add(g.getAsInt()));
+                        grupoDao.definirGruposDoCodigo(id, gids);
+                    }
+                    Codigo novo = codigoDao.getCodigoPorId(id);
+                    JsonElement el = gson.toJsonTree(novo);
+                    JsonArray grupos = new JsonArray();
+                    grupoDao.listarGruposDoCodigo(id).forEach(grupos::add);
+                    el.getAsJsonObject().add("grupos", grupos);
+                    return gson.toJson(el);
                 }
+                res.status(500);
+                return gson.toJson(erro("Erro ao salvar código"));
 
             } catch (Exception e) {
                 res.status(500);
-                JsonObject erro = new JsonObject();
-                erro.addProperty("erro", e.getMessage());
-                return gson.toJson(erro);
+                return gson.toJson(erro(e.getMessage()));
             }
         });
 
-        // Deletar codigo
         delete("/api/codigos/:id", (req, res) -> {
             res.type("application/json");
             try {
-                String userIdCookie = req.cookie("userId");
-                if (userIdCookie == null) {
+                if (!autenticado(req)) {
                     res.status(401);
-                    JsonObject erro = new JsonObject();
-                    erro.addProperty("erro", "Não autenticado");
-                    return gson.toJson(erro);
+                    return gson.toJson(erro("Não autenticado"));
+                }
+                int cid = Integer.parseInt(req.params(":id"));
+                boolean ok = codigoDao.deletarCodigo(cid, userId(req));
+                if (ok) {
+                    return gson.toJson(respostaOk());
+                }
+                res.status(404);
+                return gson.toJson(erro("Código não encontrado"));
+            } catch (Exception e) {
+                res.status(500);
+                return gson.toJson(erro(e.getMessage()));
+            }
+        });
+
+        // ══════════════════════════════════════════════════════════════════════
+        //  GRUPOS
+        // ══════════════════════════════════════════════════════════════════════
+        get("/api/grupos", (req, res) -> {
+            res.type("application/json");
+            try {
+                if (!autenticado(req)) {
+                    res.status(401);
+                    return gson.toJson(erro("Não autenticado"));
+                }
+                return gson.toJson(grupoDao.listarPorUsuario(userId(req)));
+            } catch (Exception e) {
+                res.status(500);
+                return gson.toJson(erro(e.getMessage()));
+            }
+        });
+
+        post("/api/grupos", (req, res) -> {
+            res.type("application/json");
+            try {
+                if (!autenticado(req)) {
+                    res.status(401);
+                    return gson.toJson(erro("Não autenticado"));
                 }
 
-                int userId = Integer.parseInt(userIdCookie);
-                int codigoId = Integer.parseInt(req.params(":id"));
+                Type t = new TypeToken<Map<String, String>>() {
+                }.getType();
+                Map<String, String> data = gson.fromJson(req.body(), t);
 
-                boolean sucesso = codigoDao.deletarCodigo(codigoId, userId);
-
-                if (sucesso) {
-                    JsonObject resposta = new JsonObject();
-                    resposta.addProperty("status", "ok");
-                    return gson.toJson(resposta);
-                } else {
-                    res.status(404);
-                    JsonObject erro = new JsonObject();
-                    erro.addProperty("erro", "Código não encontrado");
-                    return gson.toJson(erro);
+                String nome = data.get("nome");
+                if (nome == null || nome.isBlank()) {
+                    res.status(400);
+                    return gson.toJson(erro("Nome do grupo é obrigatório"));
                 }
+
+                Grupo g = new Grupo();
+                g.setNome(nome);
+                g.setDescricao(data.get("descricao"));
+                g.setCor(data.getOrDefault("cor", "#00d9ff"));
+                g.setUsuarioId(userId(req));
+
+                int id = grupoDao.cadastrar(g);
+                if (id > 0) {
+                    return gson.toJson(grupoDao.getPorId(id));
+                }
+                res.status(500);
+                return gson.toJson(erro("Erro ao criar grupo"));
 
             } catch (Exception e) {
                 res.status(500);
-                JsonObject erro = new JsonObject();
-                erro.addProperty("erro", e.getMessage());
-                return gson.toJson(erro);
+                return gson.toJson(erro(e.getMessage()));
+            }
+        });
+
+        put("/api/grupos/:id", (req, res) -> {
+            res.type("application/json");
+            try {
+                if (!autenticado(req)) {
+                    res.status(401);
+                    return gson.toJson(erro("Não autenticado"));
+                }
+
+                Type t = new TypeToken<Map<String, String>>() {
+                }.getType();
+                Map<String, String> data = gson.fromJson(req.body(), t);
+
+                Grupo g = new Grupo();
+                g.setId(Integer.parseInt(req.params(":id")));
+                g.setNome(data.get("nome"));
+                g.setDescricao(data.get("descricao"));
+                g.setCor(data.getOrDefault("cor", "#00d9ff"));
+                g.setUsuarioId(userId(req));
+
+                boolean ok = grupoDao.atualizar(g);
+                if (ok) {
+                    return gson.toJson(grupoDao.getPorId(g.getId()));
+                }
+                res.status(404);
+                return gson.toJson(erro("Grupo não encontrado"));
+
+            } catch (Exception e) {
+                res.status(500);
+                return gson.toJson(erro(e.getMessage()));
+            }
+        });
+
+        delete("/api/grupos/:id", (req, res) -> {
+            res.type("application/json");
+            try {
+                if (!autenticado(req)) {
+                    res.status(401);
+                    return gson.toJson(erro("Não autenticado"));
+                }
+                int gid = Integer.parseInt(req.params(":id"));
+                boolean ok = grupoDao.deletar(gid, userId(req));
+                if (ok) {
+                    return gson.toJson(respostaOk());
+                }
+                res.status(404);
+                return gson.toJson(erro("Grupo não encontrado"));
+            } catch (Exception e) {
+                res.status(500);
+                return gson.toJson(erro(e.getMessage()));
+            }
+        });
+
+        // Definir grupos de um código (recebe array JSON de IDs)
+        post("/api/codigos/:id/grupos", (req, res) -> {
+            res.type("application/json");
+            try {
+                if (!autenticado(req)) {
+                    res.status(401);
+                    return gson.toJson(erro("Não autenticado"));
+                }
+                int cid = Integer.parseInt(req.params(":id"));
+                JsonArray arr = JsonParser.parseString(req.body()).getAsJsonArray();
+                List<Integer> gids = new ArrayList<>();
+                arr.forEach(e -> gids.add(e.getAsInt()));
+                grupoDao.definirGruposDoCodigo(cid, gids);
+                return gson.toJson(respostaOk());
+            } catch (Exception e) {
+                res.status(500);
+                return gson.toJson(erro(e.getMessage()));
+            }
+        });
+
+        // ══════════════════════════════════════════════════════════════════════
+        //  EXERCÍCIOS
+        // ══════════════════════════════════════════════════════════════════════
+        get("/api/exercicios", (req, res) -> {
+            res.type("application/json");
+            try {
+                if (!autenticado(req)) {
+                    res.status(401);
+                    return gson.toJson(erro("Não autenticado"));
+                }
+                return gson.toJson(exercicioDao.listarPorUsuario(userId(req)));
+            } catch (Exception e) {
+                res.status(500);
+                return gson.toJson(erro(e.getMessage()));
+            }
+        });
+
+        post("/api/exercicios", (req, res) -> {
+            res.type("application/json");
+            try {
+                if (!autenticado(req)) {
+                    res.status(401);
+                    return gson.toJson(erro("Não autenticado"));
+                }
+
+                Type t = new TypeToken<Map<String, String>>() {
+                }.getType();
+                Map<String, String> data = gson.fromJson(req.body(), t);
+
+                String titulo = data.get("titulo");
+                if (titulo == null || titulo.isBlank()) {
+                    res.status(400);
+                    return gson.toJson(erro("Título é obrigatório"));
+                }
+
+                Exercicio ex = new Exercicio();
+                ex.setNumero(data.get("numero"));
+                ex.setTitulo(titulo);
+                ex.setEnunciado(data.get("enunciado"));
+                ex.setEntrada(data.get("entrada"));
+                ex.setSaida(data.get("saida"));
+                ex.setDificuldade(data.getOrDefault("dificuldade", "Fácil"));
+                ex.setLinguagem(data.get("linguagem"));
+                ex.setStatus(data.getOrDefault("status", "pendente"));
+                ex.setSolucao(data.get("solucao"));
+                ex.setObservacoes(data.get("observacoes"));
+                ex.setUsuarioId(userId(req));
+
+                int id = exercicioDao.cadastrar(ex);
+                if (id > 0) {
+                    return gson.toJson(exercicioDao.getPorId(id));
+                }
+                res.status(500);
+                return gson.toJson(erro("Erro ao salvar exercício"));
+
+            } catch (Exception e) {
+                res.status(500);
+                return gson.toJson(erro(e.getMessage()));
+            }
+        });
+
+        put("/api/exercicios/:id", (req, res) -> {
+            res.type("application/json");
+            try {
+                if (!autenticado(req)) {
+                    res.status(401);
+                    return gson.toJson(erro("Não autenticado"));
+                }
+
+                Type t = new TypeToken<Map<String, String>>() {
+                }.getType();
+                Map<String, String> data = gson.fromJson(req.body(), t);
+
+                Exercicio ex = new Exercicio();
+                ex.setId(Integer.parseInt(req.params(":id")));
+                ex.setNumero(data.get("numero"));
+                ex.setTitulo(data.get("titulo"));
+                ex.setEnunciado(data.get("enunciado"));
+                ex.setEntrada(data.get("entrada"));
+                ex.setSaida(data.get("saida"));
+                ex.setDificuldade(data.getOrDefault("dificuldade", "Fácil"));
+                ex.setLinguagem(data.get("linguagem"));
+                ex.setStatus(data.getOrDefault("status", "pendente"));
+                ex.setSolucao(data.get("solucao"));
+                ex.setObservacoes(data.get("observacoes"));
+                ex.setUsuarioId(userId(req));
+
+                boolean ok = exercicioDao.atualizar(ex);
+                if (ok) {
+                    return gson.toJson(exercicioDao.getPorId(ex.getId()));
+                }
+                res.status(404);
+                return gson.toJson(erro("Exercício não encontrado"));
+
+            } catch (Exception e) {
+                res.status(500);
+                return gson.toJson(erro(e.getMessage()));
+            }
+        });
+
+        delete("/api/exercicios/:id", (req, res) -> {
+            res.type("application/json");
+            try {
+                if (!autenticado(req)) {
+                    res.status(401);
+                    return gson.toJson(erro("Não autenticado"));
+                }
+                int eid = Integer.parseInt(req.params(":id"));
+                boolean ok = exercicioDao.deletar(eid, userId(req));
+                if (ok) {
+                    return gson.toJson(respostaOk());
+                }
+                res.status(404);
+                return gson.toJson(erro("Exercício não encontrado"));
+            } catch (Exception e) {
+                res.status(500);
+                return gson.toJson(erro(e.getMessage()));
             }
         });
     }

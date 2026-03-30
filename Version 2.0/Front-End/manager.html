@@ -1,119 +1,166 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/style.css">
-    <title>Meus Códigos</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArmazenaCódigo — Meus Códigos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
-
 <body>
-    <header>
-        <div class="logo">
-            <a href="index.html" style="text-decoration: none; color: inherit;">
-                <span class="texto-logo">Armazena Codigo</span>
-            </a>
+<div class="layout-app">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icone">&lt;/&gt;</div>
+      <div>
+        <div class="logo-texto">ArmazenaCódigo</div>
+        <div class="logo-sub">v2.0 — snippet hub</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <span class="nav-rotulo">Principal</span>
+      <a class="nav-item" href="index.html"><i class="fa-solid fa-house"></i> Início</a>
+      <a class="nav-item ativo" href="manager.html"><i class="fa-solid fa-code"></i> Meus Códigos <span class="nav-badge" id="badgeCodigos">0</span></a>
+      <a class="nav-item" href="groups.html"><i class="fa-solid fa-layer-group"></i> Grupos <span class="nav-badge" id="badgeGrupos">0</span></a>
+      <a class="nav-item" href="exercises.html"><i class="fa-solid fa-dumbbell"></i> Exercícios</a>
+      <a class="nav-item" href="categories.html"><i class="fa-solid fa-folder"></i> Categorias</a>
+      <span class="nav-rotulo">Ações</span>
+      <a class="nav-item" href="manager.html"><i class="fa-solid fa-plus"></i> Novo Código</a>
+    </nav>
+    <div class="sidebar-rodape">
+      <div class="cartao-usuario" id="cartaoUsuario" style="display:none">
+        <div class="avatar-usuario" id="avatarSidebar">G</div>
+        <div class="info-usuario">
+          <div class="nome-usuario" id="nomeSidebar">—</div>
+          <div class="email-usuario" id="emailSidebar">—</div>
         </div>
-        <nav>
-            <a href="index.html">Início</a>
-            <a href="manager.html" class="active">Meus Códigos</a>
-            <a href="categories.html">Categorias</a>
-        </nav>
-        <!-- <button class="alternar-tema" onclick="toggleTheme()">🌙</button> -->
+      </div>
+    </div>
+  </aside>
+
+  <div class="principal">
+    <header class="topbar">
+      <span class="topbar-titulo">Meus Códigos</span>
+      <div class="topbar-acoes">
+        <div class="barra-busca">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="searchInput" placeholder="Buscar códigos..." oninput="handleSearch()">
+        </div>
+        <div id="menuTopbar"></div>
+      </div>
     </header>
 
-    <div class="container">
-        <h1 style="font-size: 2rem; margin-bottom: 2rem; color: #fff;">
-            <span style="margin-right: 10px;"><i class="fa-regular fa-file"></i></span>
-            Gerenciar Códigos
-        </h1>
+    <div class="pagina">
+      <div class="grade-gerenciador">
 
-        <div class="grade-gerenciador">
-            <div class="card">
-                <h2 class="titulo-secao">
-                    <span class="icone-secao">➕</span>
-                    Adicionar Código
-                </h2>
-                <div id="codeForm">
-                    <div class="grupo-campo">
-                        <label for="codeTitle">Título</label>
-                        <input type="text" id="codeTitle" placeholder="Ex: Função de validação de email" required>
-                    </div>
+        <!-- Formulário -->
+        <div class="painel">
+          <div class="painel-cabecalho">
+            <span class="painel-titulo" id="formTitulo">➕ Adicionar Código</span>
+            <button class="btn btn-secundario btn-sm" id="btnCancelarEdicao" onclick="cancelarEdicao()" style="display:none">
+              <i class="fa-solid fa-xmark"></i> Cancelar
+            </button>
+          </div>
+          <div class="painel-corpo">
+            <input type="hidden" id="editandoCodigoId">
 
-                    <div class="grupo-campo">
-                        <label for="codeLanguage">Linguagem *</label>
-                        <select id="codeLanguage" required>
-                            <option value="">Selecione uma linguagem</option>
-                            <option value="JavaScript">JavaScript</option>
-                            <option value="Python">Python</option>
-                            <option value="Java">Java</option>
-                            <option value="C++">C++</option>
-                            <option value="C#">C#</option>
-                            <option value="PHP">PHP</option>
-                            <option value="Ruby">Ruby</option>
-                            <option value="Go">Go</option>
-                            <option value="Rust">Rust</option>
-                            <option value="HTML">HTML</option>
-                            <option value="CSS">CSS</option>
-                            <option value="SQL">SQL</option>
-                            <option value="TypeScript">TypeScript</option>
-                            <option value="Outro">Outro</option>
-                        </select>
-                    </div>
-
-                    <div class="grupo-campo">
-                        <label for="codeDescription">Descrição</label>
-                        <input type="text" id="codeDescription" placeholder="Breve descrição do código">
-                    </div>
-
-                    <div class="grupo-campo">
-                        <label for="codeContent">Código</label>
-                        <textarea id="codeContent" placeholder="Cole seu código aqui..." required></textarea>
-                    </div>
-
-                    <button onclick="handleSubmit()" class="btn botao-primario"><i class="fa-solid fa-book"></i> Salvar Código</button>
-                </div>
+            <div class="grupo-campo">
+              <label>Título *</label>
+              <input type="text" id="codeTitle" placeholder="Ex: Função de validação de email">
             </div>
 
-            <div class="card">
-                <h2 class="titulo-secao">
-                    <span class="icone-secao"><i class="fa-solid fa-book"></i></span>
-                    Códigos Salvos
-                </h2>
-
-                <div class="caixa-busca">
-                    <input type="text" id="searchInput" placeholder="Buscar códigos..." oninput="handleSearch()">
-                </div>
-
-                <div class="lista-codigos" id="codeList"></div>
+            <div class="grupo-campo">
+              <label>Linguagem *</label>
+              <select id="codeLanguage">
+                <option value="">Selecione uma linguagem</option>
+                <option>JavaScript</option><option>TypeScript</option><option>Python</option>
+                <option>Java</option><option>C++</option><option>C#</option><option>PHP</option>
+                <option>Ruby</option><option>Go</option><option>Rust</option>
+                <option>HTML</option><option>CSS</option><option>SQL</option><option>Outro</option>
+              </select>
             </div>
+
+            <div class="grupo-campo">
+              <label>Descrição</label>
+              <input type="text" id="codeDescription" placeholder="Breve descrição do código">
+            </div>
+
+            <div class="grupo-campo">
+              <label>Grupos</label>
+              <div class="pills-grupos" id="pillsGrupos"></div>
+            </div>
+
+            <div class="grupo-campo">
+              <label>Código *</label>
+              <textarea id="codeContent" placeholder="// Cole seu código aqui..."></textarea>
+            </div>
+
+            <button onclick="handleSubmit()" class="btn btn-primario" style="width:100%">
+              <i class="fa-solid fa-floppy-disk"></i> Salvar Código
+            </button>
+          </div>
         </div>
-    </div>
 
-    <!-- Modal -->
-    <div class="modal" id="codeModal">
-        <div class="conteudo-modal">
-            <div class="cabecalho-modal">
-                <div>
-                    <h2 id="modalTitle" style="color: #00d9ff; margin-bottom: 10px;"></h2>
-                    <span id="modalLanguage" class="linguagem-badge"></span>
-                </div>
-                <button class="fechar-modal" onclick="closeModal()">×</button>
+        <!-- Lista + Visualizador -->
+        <div style="display:flex;flex-direction:column;gap:1.2rem">
+
+          <!-- Lista -->
+          <div class="painel">
+            <div class="painel-cabecalho">
+              <span class="painel-titulo"><i class="fa-solid fa-book" style="color:var(--ciano);margin-right:6px"></i>Códigos Salvos</span>
+              <span style="font-size:0.75rem;color:#505870" id="contagemCodigos">0 itens</span>
             </div>
-            <p id="modalDescription" style="color: #a0a0a0; margin-bottom: 15px;"></p>
-            <p id="modalDate" style="color: #666; font-size: 0.85rem; margin-bottom: 15px;"></p>
-            <div class="codigo-modal">
-                <pre><code id="modalCode"></code></pre>
+            <div class="painel-corpo" style="padding-bottom:0">
+              <div class="lista-codigos" id="codeList"></div>
             </div>
-            <button class="btn botao-primario" onclick="copyModalCode()"><i class="fa-solid fa-code"></i> Copiar Código</button>
+          </div>
+
+          <!-- Visualizador -->
+          <div class="visualizador">
+            <div class="visualizador-cabecalho">
+              <div class="pontos-janela">
+                <div class="ponto vm"></div>
+                <div class="ponto am"></div>
+                <div class="ponto vd"></div>
+              </div>
+              <span class="arquivo-nome" id="nomeArquivo">nenhum arquivo selecionado</span>
+              <button class="btn-icone-copiar" onclick="copiarVisualizador()" title="Copiar código">
+                <i class="fa-solid fa-copy"></i>
+              </button>
+            </div>
+            <pre><code id="codigoVisualizado" style="color:var(--texto3);font-style:italic">// Selecione um código na lista para visualizá-lo aqui.</code></pre>
+            <div class="visualizador-rodape" id="rodapeVisualizador" style="display:none">
+              <div style="display:flex;gap:7px;flex-wrap:wrap" id="tagsVisualizador"></div>
+              <span style="font-size:0.72rem;color:#505870;font-family:'JetBrains Mono',monospace" id="dataVisualizador"></span>
+            </div>
+          </div>
+
         </div>
+      </div>
     </div>
+  </div>
+</div>
 
-    <script src="assets/js/api.js"></script>
-    <script src="assets/js/manager.js"></script>
+<!-- Modal código -->
+<div class="modal" id="codeModal">
+  <div class="conteudo-modal">
+    <div class="cabecalho-modal">
+      <div>
+        <h2 id="modalTitle" style="color:var(--ciano);margin-bottom:10px"></h2>
+        <span id="modalLanguage" class="linguagem-badge"></span>
+      </div>
+      <button class="fechar-modal" onclick="closeModal()">×</button>
+    </div>
+    <p id="modalDescription" style="color:#8892a4;margin-bottom:15px"></p>
+    <p id="modalDate" style="color:#505870;font-size:0.85rem;margin-bottom:15px"></p>
+    <div class="codigo-modal"><pre><code id="modalCode"></code></pre></div>
+    <button class="btn btn-primario" onclick="copyModalCode()"><i class="fa-solid fa-copy"></i> Copiar Código</button>
+  </div>
+</div>
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/manager.js"></script>
 </body>
-
 </html>

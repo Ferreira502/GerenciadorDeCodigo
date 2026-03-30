@@ -1,48 +1,72 @@
-// home.js — pagina inicial via API
+// home.js — Página inicial
 
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await injectUserMenu();
     if (!session) return;
-    const codigos = await listarCodigos();
-    atualizarStats(codigos);
-    renderizarAtividade(codigos);
+
+    const [codigos, grupos, exercicios] = await Promise.all([
+        listarCodigos(),
+        listarGrupos(),
+        listarExercicios()
+    ]);
+
+    atualizarStats(codigos, grupos, exercicios);
+    renderizarAtividade(codigos, exercicios);
+    atualizarBadgesSidebar(codigos, grupos, exercicios);
 });
 
-function atualizarStats(codigos) {
-    document.getElementById('totalCodes').textContent     = codigos.length;
-    document.getElementById('totalLanguages').textContent = new Set(codigos.map(c => c.linguagem)).size;
-    const agora = new Date();
-    const doMes = codigos.filter(c => {
-        const d = new Date(c.criadoEm);
-        return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
-    });
-    document.getElementById('thisMonth').textContent = doMes.length;
+function atualizarStats(codigos, grupos, exercicios) {
+    document.getElementById('totalCodigos').textContent    = codigos.length;
+    document.getElementById('totalGrupos').textContent     = grupos.length;
+    document.getElementById('totalExercicios').textContent = exercicios.length;
+    document.getElementById('totalResolvidos').textContent = exercicios.filter(e => e.status === 'resolvido').length;
 }
 
-function renderizarAtividade(codigos) {
-    const list = document.getElementById('recentActivity');
-    if (codigos.length === 0) {
+function atualizarBadgesSidebar(codigos, grupos, exercicios) {
+    const bc = document.getElementById('badgeCodigos');
+    const bg = document.getElementById('badgeGrupos');
+    const be = document.getElementById('badgeExercicios');
+    if (bc) bc.textContent = codigos.length;
+    if (bg) bg.textContent = grupos.length;
+    if (be) be.textContent = exercicios.length;
+}
+
+function renderizarAtividade(codigos, exercicios) {
+    const list = document.getElementById('listaAtividade');
+
+    const tudo = [
+        ...codigos.map(c => ({ tipo: 'codigo', titulo: c.titulo, lang: c.linguagem, data: c.criadoEm, obj: c })),
+        ...exercicios.map(e => ({ tipo: 'exercicio', titulo: e.titulo, dif: e.dificuldade, data: e.criadoEm, obj: e }))
+    ].sort((a, b) => new Date(b.data) - new Date(a.data)).slice(0, 6);
+
+    if (!tudo.length) {
         list.innerHTML = `
             <div class="estado-vazio">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M16 18L22 12L16 6M8 6L2 12L8 18"/>
                 </svg>
-                <p style="margin-top:1rem;font-size:1.1rem;">Nenhum código salvo ainda</p>
-                <p style="margin-top:.5rem;">Adicione seu primeiro código para começar!</p>
+                <p>Nenhuma atividade ainda.<br>Adicione seu primeiro código para começar!</p>
             </div>`;
         return;
     }
-    const recentes = [...codigos]
-        .sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm))
-        .slice(0, 5);
-    list.innerHTML = recentes.map(c => `
-        <div class="item-atividade" onclick='viewCode(${JSON.stringify(c)})'>
-            <div class="icone-atividade">💻</div>
+
+    const diffClass = { 'Fácil': 'tag-dif-facil', 'Médio': 'tag-dif-medio', 'Difícil': 'tag-dif-dificil' };
+
+    list.innerHTML = tudo.map(a => `
+        <div class="item-atividade"
+             onclick="${a.tipo === 'codigo'
+                ? `viewCode(${JSON.stringify(a.obj)})`
+                : `window.location='exercises.html'`}">
+            <div class="icone-atividade">
+                ${a.tipo === 'codigo' ? '💻' : '🏋️'}
+            </div>
             <div class="conteudo-atividade">
-                <div class="titulo-atividade">${escapeHtml(c.titulo)}</div>
+                <div class="titulo-atividade">${escapeHtml(a.titulo)}</div>
                 <div class="meta-atividade">
-                    <span class="linguagem-badge">${escapeHtml(c.linguagem)}</span>
-                    <span style="margin-left:10px;">${formatDate(c.criadoEm)}</span>
+                    ${a.tipo === 'codigo'
+                        ? `<span class="linguagem-badge">${escapeHtml(a.lang)}</span>`
+                        : `<span class="tag ${diffClass[a.dif] || 'tag-dif-facil'}">${escapeHtml(a.dif)}</span>`}
+                    <span>${formatDate(a.data)}</span>
                 </div>
             </div>
         </div>`).join('');

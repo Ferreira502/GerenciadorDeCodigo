@@ -1,115 +1,98 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/cadastro.css">
-    <title>Armazena Codigo — Entrar</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/cadastro.css">
+  <title>ArmazenaCódigo — Entrar</title>
 </head>
-
 <body>
-    <div class="pagina-acesso">
-        <div class="logo-acesso">
-            <span class="texto-logo">Armazena Codigo</span>
-            <p>Seu repositório pessoal de Codigos</p>
-        </div>
-
-        <div class="cartao-acesso">
-            
-            <!-- Tabs -->
-            <div class="abas-acesso">
-                <button class="aba-acesso active" onclick="switchTab('login')">Entrar</button>
-                <button class="aba-acesso" onclick="switchTab('cadastro')">Criar Conta</button>
-            </div>
-
-            <!-- LOGIN -->
-            <div class="formulario-acesso active" id="formLogin">   
-                <div class="titulo-formulario">Bem-vindo de volta</div>
-                <div class="subtitulo-formulario">Acesse seus códigos salvos</div>
-
-                <div class="mensagem-erro" id="erroLogin">
-                    <i class="fa-solid fa-circle-exclamation"></i>
-                    <span id="erroLoginMsg"></span>
-                </div>
-
-                <div class="grupo-campo">
-                    <label for="loginEmail">Email</label>
-                    <div class="envoltorio-campo">
-                        <input type="email" id="loginEmail" placeholder="seu@email.com" autocomplete="email">
-                        <i class="fa-regular fa-envelope"></i>
-                    </div>
-                </div>
-
-                <div class="grupo-campo">
-                    <label for="loginSenha">Senha</label>
-                    <div class="envoltorio-campo">
-                        <input type="password" id="loginSenha" placeholder="Digite sua senha"
-                            autocomplete="current-password">
-                        <i class="fa-solid fa-lock"></i>
-                    </div>
-                </div>
-
-                <button class="botao-entrar" id="btnLogin" onclick="fazerLogin()">
-                    <span class="carregando" id="spinnerLogin"></span>
-                    <i class="fa-solid fa-right-to-bracket" id="iconLogin"></i>
-                    Entrar
-                </button>
-            </div>
-
-            <!-- CADASTRO -->
-            <div class="formulario-acesso" id="formCadastro">
-                <div class="titulo-formulario">Crie sua conta</div>
-                <div class="subtitulo-formulario">Gratuito e sem complicação</div>
-
-                <div class="mensagem-erro" id="erroCadastro">
-                    <i class="fa-solid fa-circle-exclamation"></i>
-                    <span id="erroCadastroMsg"></span>
-                </div>
-
-                <div class="mensagem-sucesso" id="sucessoCadastro">
-                    <i class="fa-solid fa-circle-check"></i>
-                    <span>Conta criada! Redirecionando...</span>
-                </div>
-
-                <div class="grupo-campo">
-                    <label for="cadNome">Nome completo</label>
-                    <div class="envoltorio-campo">
-                        <input type="text" id="cadNome" placeholder="Seu nome" autocomplete="name">
-                        <i class="fa-regular fa-user"></i>
-                    </div>
-                </div>
-
-                <div class="grupo-campo">
-                    <label for="cadEmail">Email</label>
-                    <div class="envoltorio-campo">
-                        <input type="email" id="cadEmail" placeholder="seu@email.com" autocomplete="email">
-                        <i class="fa-regular fa-envelope"></i>
-                    </div>
-                </div>
-
-                <div class="grupo-campo">
-                    <label for="cadSenha">Senha</label>
-                    <div class="envoltorio-campo">
-                        <input type="password" id="cadSenha" placeholder="Mínimo 6 caracteres"
-                            autocomplete="new-password">
-                        <i class="fa-solid fa-lock"></i>
-                    </div>
-                </div>
-
-                <button class="botao-entrar" id="btnCadastro" onclick="fazerCadastro()">
-                    <span class="carregando" id="spinnerCadastro"></span>
-                    <i class="fa-solid fa-user-plus" id="iconCadastro"></i>
-                    Criar Conta
-                </button>
-            </div>
-        </div>
+  <div class="pagina-acesso">
+    <div class="logo-acesso">
+      <span class="texto-logo">Armazena Codigo</span>
+      <p>Seu repositório pessoal de Codigos</p>
     </div>
 
-    <script src="assets/js/api.js"></script>
-    <script src="assets/js/cadastro.js"></script>
-</body>
+    <div class="cartao-acesso">
+      <div class="abas-acesso">
+        <button class="aba-acesso active" onclick="switchTab('login')">Entrar</button>
+        <button class="aba-acesso" onclick="switchTab('cadastro')">Criar Conta</button>
+      </div>
 
+      <!-- LOGIN -->
+      <div class="formulario-acesso active" id="formLogin">
+        <div class="titulo-formulario">Bem-vindo de volta</div>
+        <div class="subtitulo-formulario">Acesse seus códigos salvos</div>
+        <div class="mensagem-erro" id="erroLogin">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span id="erroLoginMsg"></span>
+        </div>
+        <div class="grupo-campo">
+          <label for="loginEmail">Email</label>
+          <div class="envoltorio-campo">
+            <input type="email" id="loginEmail" placeholder="seu@email.com" autocomplete="email">
+            <i class="fa-regular fa-envelope"></i>
+          </div>
+        </div>
+        <div class="grupo-campo">
+          <label for="loginSenha">Senha</label>
+          <div class="envoltorio-campo">
+            <input type="password" id="loginSenha" placeholder="Digite sua senha" autocomplete="current-password">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+        </div>
+        <button class="botao-entrar" id="btnLogin" onclick="fazerLogin()">
+          <span class="carregando" id="spinnerLogin"></span>
+          <i class="fa-solid fa-right-to-bracket" id="iconLogin"></i>
+          Entrar
+        </button>
+      </div>
+
+      <!-- CADASTRO -->
+      <div class="formulario-acesso" id="formCadastro">
+        <div class="titulo-formulario">Crie sua conta</div>
+        <div class="subtitulo-formulario">Gratuito e sem complicação</div>
+        <div class="mensagem-erro" id="erroCadastro">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span id="erroCadastroMsg"></span>
+        </div>
+        <div class="mensagem-sucesso" id="sucessoCadastro">
+          <i class="fa-solid fa-circle-check"></i>
+          <span>Conta criada! Redirecionando...</span>
+        </div>
+        <div class="grupo-campo">
+          <label for="cadNome">Nome completo</label>
+          <div class="envoltorio-campo">
+            <input type="text" id="cadNome" placeholder="Seu nome" autocomplete="name">
+            <i class="fa-regular fa-user"></i>
+          </div>
+        </div>
+        <div class="grupo-campo">
+          <label for="cadEmail">Email</label>
+          <div class="envoltorio-campo">
+            <input type="email" id="cadEmail" placeholder="seu@email.com" autocomplete="email">
+            <i class="fa-regular fa-envelope"></i>
+          </div>
+        </div>
+        <div class="grupo-campo">
+          <label for="cadSenha">Senha</label>
+          <div class="envoltorio-campo">
+            <input type="password" id="cadSenha" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+        </div>
+        <button class="botao-entrar" id="btnCadastro" onclick="fazerCadastro()">
+          <span class="carregando" id="spinnerCadastro"></span>
+          <i class="fa-solid fa-user-plus" id="iconCadastro"></i>
+          Criar Conta
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/cadastro.js"></script>
+</body>
 </html>

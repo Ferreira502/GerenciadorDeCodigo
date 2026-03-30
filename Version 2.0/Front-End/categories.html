@@ -1,60 +1,84 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/style.css">
-    <title>Categorias</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArmazenaCódigo — Categorias</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <a href="index.html" style="text-decoration: none; color: inherit;">
-                <span class="texto-logo">Armazena Codigo</span>
-            </a>
+<div class="layout-app">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icone">&lt;/&gt;</div>
+      <div>
+        <div class="logo-texto">ArmazenaCódigo</div>
+        <div class="logo-sub">v2.0 — snippet hub</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <span class="nav-rotulo">Principal</span>
+      <a class="nav-item" href="index.html"><i class="fa-solid fa-house"></i> Início</a>
+      <a class="nav-item" href="manager.html"><i class="fa-solid fa-code"></i> Meus Códigos</a>
+      <a class="nav-item" href="groups.html"><i class="fa-solid fa-layer-group"></i> Grupos</a>
+      <a class="nav-item" href="exercises.html"><i class="fa-solid fa-dumbbell"></i> Exercícios</a>
+      <a class="nav-item ativo" href="categories.html"><i class="fa-solid fa-folder"></i> Categorias</a>
+      <span class="nav-rotulo">Ações</span>
+      <a class="nav-item" href="manager.html"><i class="fa-solid fa-plus"></i> Novo Código</a>
+    </nav>
+    <div class="sidebar-rodape">
+      <div class="cartao-usuario" id="cartaoUsuario" style="display:none">
+        <div class="avatar-usuario" id="avatarSidebar">G</div>
+        <div class="info-usuario">
+          <div class="nome-usuario" id="nomeSidebar">—</div>
+          <div class="email-usuario" id="emailSidebar">—</div>
         </div>
-        <nav>
-            <a href="index.html">Início</a>
-            <a href="manager.html">Meus Códigos</a>
-            <a href="categories.html" class="active">Categorias</a>
-        </nav>
-        <!-- <button class="alternar-tema" onclick="toggleTheme()">🌙</button> -->
+      </div>
+    </div>
+  </aside>
+
+  <div class="principal">
+    <header class="topbar">
+      <span class="topbar-titulo">Categorias</span>
+      <div class="topbar-acoes">
+        <div id="menuTopbar"></div>
+      </div>
     </header>
-    <div class="container">
-        <h1 style="font-size: 2rem; margin-bottom: 2rem; color: #fff;">
-            <span style="margin-right: 10px;"><i class="fa-solid fa-folder"></i></span>
-            Categorias por Linguagem
-        </h1>
-        <div class="grade-categorias" id="categoriesGrid"></div>
-        <div class="secao-recentes" style="margin-top: 2.5rem;">
-            <h2 class="titulo-secao">
-                <span class="icone-secao"><i class="fa-solid fa-code"></i></span>
-                Códigos da Categoria
-            </h2>
-            <div id="categoryCodesList" class="lista-codigos"></div>
-        </div>
+
+    <div class="pagina">
+      <div class="titulo-secao" style="margin-bottom:1rem"><i class="fa-solid fa-folder"></i> Categorias por Linguagem</div>
+
+      <div class="grade-categorias" id="categoriesGrid"></div>
+
+      <div class="secao-recentes" style="margin-top:1.5rem">
+        <div class="titulo-secao" style="margin-bottom:1rem"><i class="fa-solid fa-code"></i> Códigos da Categoria</div>
+        <div id="categoryCodesList" class="lista-codigos"></div>
+      </div>
     </div>
-    <!-- Modal -->
-    <div class="modal" id="codeModal">
-        <div class="conteudo-modal">
-            <div class="cabecalho-modal">
-                <div>
-                    <h2 id="modalTitle" style="color: #00d9ff; margin-bottom: 10px;"></h2>
-                    <span id="modalLanguage" class="linguagem-badge"></span>
-                </div>
-                <button class="fechar-modal" onclick="closeModal()">×</button>
-            </div>
-            <p id="modalDescription" style="color: #a0a0a0; margin-bottom: 15px;"></p>
-            <p id="modalDate" style="color: #666; font-size: 0.85rem; margin-bottom: 15px;"></p>
-            <div class="codigo-modal">
-                <pre><code id="modalCode"></code></pre>
-            </div>
-            <button class="btn botao-primario" onclick="copyModalCode()"><i class="fa-solid fa-code"></i> Copiar Código</button>
-        </div>
+  </div>
+</div>
+
+<!-- Modal código -->
+<div class="modal" id="codeModal">
+  <div class="conteudo-modal">
+    <div class="cabecalho-modal">
+      <div>
+        <h2 id="modalTitle" style="color:var(--ciano);margin-bottom:10px"></h2>
+        <span id="modalLanguage" class="linguagem-badge"></span>
+      </div>
+      <button class="fechar-modal" onclick="closeModal()">×</button>
     </div>
-    <script src="assets/js/api.js"></script>
-    <script src="assets/js/categories.js"></script>
+    <p id="modalDescription" style="color:#8892a4;margin-bottom:15px"></p>
+    <p id="modalDate" style="color:#505870;font-size:0.85rem;margin-bottom:15px"></p>
+    <div class="codigo-modal"><pre><code id="modalCode"></code></pre></div>
+    <button class="btn btn-primario" onclick="copyModalCode()"><i class="fa-solid fa-copy"></i> Copiar Código</button>
+  </div>
+</div>
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/categories.js"></script>
 </body>
 </html>
