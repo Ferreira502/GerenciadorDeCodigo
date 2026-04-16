@@ -15,5 +15,4 @@ Sinta-se à vontade para abrir **issues**, sugerir melhorias ou enviar **pull re
 Email: gabrielferreirape502@gmail.com 
 Telefone: 31972471784  
 
-
 ---
